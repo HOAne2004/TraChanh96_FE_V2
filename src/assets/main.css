@@ -1,0 +1,43 @@
+/* 1. Nhúng toàn bộ core của Tailwind v4 */
+@import "tailwindcss";
+
+/* 2. ĐỊNH NGHĨA THEME (Thay thế cho tailwind.config.js cũ) */
+@theme {
+  /* Định nghĩa màu Primary (Xanh lá Trà Chanh) */
+  --color-primary-50: #f0fdf4;
+  --color-primary-100: #dcfce7;
+  --color-primary-500: #22c55e; /* Màu nút bấm chính */
+  --color-primary-600: #16a34a; /* Màu nút bấm khi hover */
+  --color-primary-700: #15803d;
+
+  /* Định nghĩa màu Secondary (Vàng Chanh) */
+  --color-secondary-400: #facc15;
+  --color-secondary-500: #eab308;
+
+  /* Ghi đè Font chữ mặc định của hệ thống (nếu bạn có dùng Google Fonts) */
+  --font-sans: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+/* 3. ĐỊNH NGHĨA CÁC COMPONENTS DÙNG CHUNG */
+/* Thay vì lúc nào cũng phải gõ lại 1 đống class dài ngoằng, ta gom chúng lại */
+@layer components {
+  /* Nút bấm chuẩn của toàn hệ thống */
+  .btn-primary {
+    @apply bg-primary-500 text-white font-medium px-4 py-2 rounded-md
+           hover:bg-primary-600 transition-colors duration-200
+           disabled:bg-gray-400 disabled:cursor-not-allowed;
+  }
+
+  /* Nút bấm phụ (Nút Hủy, Đóng...) */
+  .btn-outline {
+    @apply border border-gray-300 text-gray-700 bg-white font-medium px-4 py-2 rounded-md
+           hover:bg-gray-50 transition-colors duration-200;
+  }
+
+  /* Ô nhập liệu chuẩn */
+  .input-field {
+    @apply w-full border border-gray-300 rounded-md px-3 py-2 mt-1
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+           transition-all duration-200;
+  }
+}

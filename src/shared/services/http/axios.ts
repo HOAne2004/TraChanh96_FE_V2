@@ -1,0 +1,68 @@
+//npm install axios
+import axios, {type AxiosInstance, type AxiosResponse, type AxiosError, type InternalAxiosRequestConfig} from "axios";
+//axios: default export => không cần {}
+//AxiosInstance: Named export => cần {}
+// bổ sung type vào trước những type ảo
+import { useAuthStore } from "@/shared/stores/auth.store";
+import type { ApiError } from "@/shared/types/api";
+
+const apiClient: AxiosInstance = axios.create({
+  /* bổ sung vào tsconfig.app.json nếu báo đỏ
+  "compilerOptions": {
+    "target": "ESNext",         // Cho phép dùng tính năng JS mới nhất
+    "module": "ESNext",         // Cho phép dùng import/export đời mới (có import.meta)
+    "moduleResolution": "bundler", // Cách TS tìm file thư viện (dành cho Vite)
+  */
+  //url gốc của API
+    baseURL: import.meta.env.VITE_API_BASE_URL,
+    //thời gian chờ tối đa cho 1 request(10s)
+    timeout: 10000,
+    //mặc định mọi request gửi đi đều là định dạng JSON
+    headers: {
+        "Content-Type": "application/json",
+    }
+});
+
+apiClient.interceptors.response.use(
+    (response: AxiosResponse) => {
+    // 1. KHI THÀNH CÔNG (HTTP Status 200 - 299)
+    // Lột bỏ lớp vỏ Axios, chỉ trả về đúng cái 'data' bên trong
+    // (chính là object { data, message, status, success } từ .NET)
+        return response.data;
+    },
+    (error: AxiosError) => {
+    // 2. KHI THẤT BẠI (HTTP Status 4xx, 5xx)
+    // Lấy thông tin lỗi từ .NET
+      if(error.response)
+      {
+        const errorData = error.response.data as ApiError;
+
+        console.error("Lỗi từ API:", errorData.message || "Lỗi không xác định");
+
+        return Promise.reject(errorData);
+      }
+      return Promise.reject({message: "Lỗi kết nối mạng hoặc server không phản hồi"});
+    }
+);
+
+//Request interceptor
+apiClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) =>{
+    //Gọi Store lấy dữ liệu
+    // LƯU Ý: Phải gọi bên trong interceptor, không gọi ở ngoài cùng file để tránh lỗi Pinia chưa khởi tạo.
+    const authStore = useAuthStore();
+    const token = authStore.token;
+
+    //Nếu có token và config có headers thì nhét token vào Authorization
+    if(token && config.headers){
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error)=>{
+    return Promise.reject(error);
+  }
+)
+//xuất nó ra để các file khác có thể import và sử dụng
+export default apiClient;
