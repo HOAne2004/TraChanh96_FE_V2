@@ -11,7 +11,24 @@ export interface RegisterPayload{
   fullName: string;
 }
 
+export interface VerifyEmailPayload{
+  email: string;
+  token: string;
+}
+
 export interface AuthResponse{
   accessToken: string;
-  user: UserProfile;
+  userId: string;
+  fullName: string;
+  role: string;
+}
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  email: string;
+  token: string;
+  newPassword: string;
 }

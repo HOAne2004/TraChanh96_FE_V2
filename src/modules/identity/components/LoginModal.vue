@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import {reactive, ref} from 'vue';
-import { useAuthStore } from '@/shared/stores/auth.store';
+import { useAuthStore } from '@/modules/identity/store/auth.store';
 import { authService } from '@/modules/identity/services/auth.service';
 import type { ApiError } from '@/shared/types/api';
+import { useToastStore } from '@/shared/store/toast.store';
 
 const authStore = useAuthStore();
+const toastStore = useToastStore();
 
 const form = reactive({
   email: '',
@@ -19,19 +21,32 @@ const handleLogin = async() =>{
   errorMessage.value ='';
 
   try{
+    // Dữ liệu lúc này đã được bóc tách sạch sẽ từ Service
     const response = await authService.login(form);
+
+    // Lưu Token
     authStore.setToken(response.accessToken);
+
+    // Lưu User
+    authStore.setUser({
+      publicId: response.userId,
+      email: form.email,
+      fullName: response.fullName,
+      role: response.role
+    });
+
     authStore.closeLoginModal();
-    alert('Đăng nhập thành công!');
+    toastStore.success('Đăng nhập thành công!');
   }
   catch(error){
-    const apiError = error as ApiError
+    const apiError = error as ApiError;
     errorMessage.value = apiError.message || 'Tài khoản hoặc mật khẩu không chính xác';
   }
   finally{
     isLoading.value = false;
   }
 };
+
 </script>
 
 <template>
@@ -66,7 +81,7 @@ const handleLogin = async() =>{
         <div class="mb-8">
           <div class="mb-1.5 flex justify-between items-center">
             <label class="block text-sm font-medium text-gray-700">Mật khẩu</label>
-            <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-500">Quên mật khẩu?</a>
+            <button type="button" @click="authStore.openForgotPasswordModal" class="text-sm font-medium text-primary-600 hover:text-primary-500">Quên mật khẩu?</button>
           </div>
           <input
             v-model="form.password"
@@ -84,8 +99,9 @@ const handleLogin = async() =>{
 
       <p class="mt-6 text-center text-sm text-gray-600">
         Chưa có tài khoản?
-        <a href="#" class="font-medium text-primary-600 hover:text-primary-500">Đăng ký ngay</a>
+        <button type="button" @click="authStore.openRegisterModal" class="font-medium text-primary-600 hover:text-primary-500">Đăng ký ngay</button>
       </p>
+
     </div>
   </div>
 </template>
