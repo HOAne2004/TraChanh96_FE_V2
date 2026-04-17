@@ -3,7 +3,8 @@ import axios, {type AxiosInstance, type AxiosResponse, type AxiosError, type Int
 //axios: default export => không cần {}
 //AxiosInstance: Named export => cần {}
 // bổ sung type vào trước những type ảo
-import { useAuthStore } from "@/shared/stores/auth.store";
+import { useAuthStore } from "@/modules/identity/store/auth.store";
+import { useToastStore } from "@/shared/store/toast.store";
 import type { ApiError } from "@/shared/types/api";
 
 const apiClient: AxiosInstance = axios.create({
@@ -22,28 +23,6 @@ const apiClient: AxiosInstance = axios.create({
         "Content-Type": "application/json",
     }
 });
-
-apiClient.interceptors.response.use(
-    (response: AxiosResponse) => {
-    // 1. KHI THÀNH CÔNG (HTTP Status 200 - 299)
-    // Lột bỏ lớp vỏ Axios, chỉ trả về đúng cái 'data' bên trong
-    // (chính là object { data, message, status, success } từ .NET)
-        return response.data;
-    },
-    (error: AxiosError) => {
-    // 2. KHI THẤT BẠI (HTTP Status 4xx, 5xx)
-    // Lấy thông tin lỗi từ .NET
-      if(error.response)
-      {
-        const errorData = error.response.data as ApiError;
-
-        console.error("Lỗi từ API:", errorData.message || "Lỗi không xác định");
-
-        return Promise.reject(errorData);
-      }
-      return Promise.reject({message: "Lỗi kết nối mạng hoặc server không phản hồi"});
-    }
-);
 
 //Request interceptor
 apiClient.interceptors.request.use(
@@ -64,5 +43,54 @@ apiClient.interceptors.request.use(
     return Promise.reject(error);
   }
 )
+
+apiClient.interceptors.response.use(
+    (response: AxiosResponse) => {
+    // 1. KHI THÀNH CÔNG (HTTP Status 200 - 299)
+    // Lột bỏ lớp vỏ Axios, chỉ trả về đúng cái 'data' bên trong
+    // (chính là object { data, message, status, success } từ .NET)
+        return response.data;
+    },
+    (error: AxiosError) => {
+    // 2. KHI THẤT BẠI (HTTP Status 4xx, 5xx)
+    const authStore = useAuthStore();
+    const toastStore = useToastStore();
+
+    // Lấy thông tin lỗi từ .NET
+      if(error.response)
+      {
+        const status = error.response.status;
+        const errorData = error.response.data as ApiError;
+
+        // Xử lý tự động theo mã trạng thái (HTTP Status)
+        switch (status) {
+            case 401: // Chưa đăng nhập hoặc Token hết hạn
+                toastStore.warning('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                authStore.logout();
+                authStore.openLoginModal(); // Bật popup bắt đăng nhập lại
+                break;
+
+            case 403: // Không có quyền truy cập
+                toastStore.error('Bạn không có quyền truy cập vào chức năng này!');
+                break;
+
+            case 500: // Server Backend bị sập/lỗi code
+                toastStore.error('Hệ thống đang gặp sự cố, vui lòng thử lại sau.');
+                break;
+
+            // Các lỗi 400 (Bad Request), 404... ta không gọi Toast ở đây,
+            // mà trả về để các trang tự hiển thị thông báo riêng cho phù hợp.
+        }
+
+        console.error("Lỗi từ API:", errorData.message || "Lỗi không xác định");
+
+        return Promise.reject(errorData);
+      }
+      toastStore.error("Lỗi kết nối mạng hoặc server không phản hồi");
+      return Promise.reject({message: "Lỗi kết nối mạng hoặc server không phản hồi"});
+    }
+);
+
+
 //xuất nó ra để các file khác có thể import và sử dụng
 export default apiClient;
