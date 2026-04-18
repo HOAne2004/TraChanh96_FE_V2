@@ -23,7 +23,12 @@ export const addressService = {
   },
 
   async updateAddress(id: number, data: AddressFormRequest): Promise<string> {
-    const response: any = await apiClient.put(`${BASE_URL}/${id}`, data);
+    const payload = {
+      ...data,
+      addressId: id
+    };
+
+    const response  : any = await apiClient.put(`${BASE_URL}/${id}`, payload);
     return response.message || response.Message || 'Cập nhật địa chỉ thành công';
   },
 

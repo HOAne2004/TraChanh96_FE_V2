@@ -7,6 +7,7 @@ import { useConfirmStore } from '@/shared/store/confirm.store';
 import { userService } from '@/modules/identity/services/user.service';
 import { uploadService } from '@/shared/services/upload.service';
 import type { UserProfile } from '@/modules/identity/types/user';
+import SectionWrapper from '@/shared/components/ui/SectionWrapper.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -241,12 +242,9 @@ onMounted(() => fetchProfile());
 </script>
 
 <template>
-  <div class="bg-gray-50 min-h-screen py-6 lg:py-10">
-    <div class="max-w-5xl mx-auto px-4 flex flex-col md:flex-row gap-6">
+  <SectionWrapper title="Thông tin cá nhân">
       <!-- MAIN CONTENT -->
-      <main class="flex-1 w-full min-w-0">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
-
+      <main class="flex justify-end items-center mb-6">
           <!-- Lớp chặn mờ khi Loading -->
           <div v-if="isLoading" class="absolute inset-0 bg-white/70 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center">
              <div class="w-8 h-8 border-[3px] border-primary-500 border-t-transparent rounded-full animate-spin"></div>
@@ -448,10 +446,9 @@ onMounted(() => fetchProfile());
             </div>
           </div>
 
-        </div>
       </main>
-    </div>
-  </div>
+  </SectionWrapper>
+
 </template>
 
 <style scoped>

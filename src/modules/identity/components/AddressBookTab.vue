@@ -35,6 +35,10 @@ onMounted(() => {
 
 // --- CÁC HÀM XỬ LÝ SỰ KIỆN ---
 const openAddModal = () => {
+  if (addresses.value && addresses.value.length >= 5) {
+    toastStore.warning('Bạn đã đạt giới hạn tối đa 5 địa chỉ.');
+    return;
+  }
   isEditMode.value = false;
   currentEditData.value = null;
   isModalOpen.value = true;
@@ -46,6 +50,14 @@ const openEditModal = (address: AddressDto) => {
   isModalOpen.value = true;
 };
 
+const formatLocalPhone = (phone?: string) => {
+  if (!phone) return '';
+  // Nếu bắt đầu bằng +84, cắt bỏ 3 ký tự đầu và thay bằng 0
+  if (phone.startsWith('+84')) return '0' + phone.slice(3);
+  // Đề phòng trường hợp lưu thiếu dấu +
+  if (phone.startsWith('84')) return '0' + phone.slice(2);
+  return phone;
+};
 // Hàm xóa địa chỉ
 const handleDelete = async (id: number) => {
   const confirm = await confirmStore.ask({
@@ -69,13 +81,13 @@ const handleDelete = async (id: number) => {
 </script>
 
 <template>
-  <SectionWrapper title="Sổ địa chỉ nhận hàng">
+  <SectionWrapper :title="`Sổ địa chỉ nhận hàng`">
     <div class="flex justify-between items-center mb-6">
-      <p class="text-sm text-gray-500">Quản lý địa chỉ giao hàng của bạn (Tối đa 5 địa chỉ).</p>
+      <h1 class="text-sm font-semibold text-gray-500">Số lượng: {{ addresses?.length || 0 }}/5</h1>
       <button
         @click="openAddModal"
-        :disabled="addresses?.length >= 5"
-        class="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-lg hover:bg-primary-700 transition shadow-sm whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+        class="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-lg transition shadow-sm whitespace-nowrap"
+        :class="addresses?.length >= 5 ? 'opacity-50 cursor-not-allowed active:scale-100' : 'hover:bg-primary-700 active:scale-95'"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
         <span class="hidden sm:inline">Thêm địa chỉ mới</span>
@@ -98,7 +110,7 @@ const handleDelete = async (id: number) => {
           <div class="flex items-center gap-3 mb-2">
             <h3 class="font-bold text-gray-900 text-base sm:text-lg">{{ address.recipientName }}</h3>
             <span class="text-gray-400">|</span>
-            <span class="text-gray-600 text-sm font-medium">{{ address.phone }}</span>
+            <span class="text-gray-600 text-sm font-medium">{{ formatLocalPhone(address.phone) }}</span>
           </div>
           <p class="text-sm text-gray-600 leading-relaxed max-w-2xl">{{ address.fullAddress }}</p>
           <div v-if="address.isDefault" class="mt-2 inline-block px-2.5 py-1 text-xs font-semibold text-primary-700 bg-primary-50 border border-primary-200 rounded-md">

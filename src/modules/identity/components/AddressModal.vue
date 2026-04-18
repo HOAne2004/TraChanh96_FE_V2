@@ -228,6 +228,14 @@ const closeModal = () => { emit('close'); };
 // --- LIFECYCLE VÀ KHỞI TẠO ---
 onMounted(fetchProvinces);
 
+const formatLocalPhone = (phone?: string) => {
+  if (!phone) return '';
+  // Nếu bắt đầu bằng +84, cắt bỏ 3 ký tự đầu và thay bằng 0
+  if (phone.startsWith('+84')) return '0' + phone.slice(3);
+  // Đề phòng trường hợp lưu thiếu dấu +
+  if (phone.startsWith('84')) return '0' + phone.slice(2);
+  return phone;
+};
 watch(() => props.isOpen, async (open) => {
   if (!open) return;
   errors.value = {};
@@ -235,7 +243,7 @@ watch(() => props.isOpen, async (open) => {
   if (props.isEdit && props.initialData) {
     form.value = {
       recipientName: props.initialData.recipientName || '',
-      phoneNumber: props.initialData.phone || '',
+      phoneNumber: formatLocalPhone(props.initialData.phone),
       addressDetail: props.initialData.addressDetail || '',
       province: props.initialData.province || '',
       district: props.initialData.district || '',
