@@ -40,4 +40,21 @@
            focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
            transition-all duration-200;
   }
+
+  /* Chuẩn hóa Label cho Form */
+  .form-label {
+    @apply mb-1.5 block text-sm font-medium text-gray-700;
+  }
+
+  /* Nút Xóa / Nguy hiểm */
+  .btn-danger {
+    @apply bg-red-500 text-white font-medium px-4 py-2 rounded-md
+           hover:bg-red-600 transition-colors duration-200
+           disabled:bg-gray-400 disabled:cursor-not-allowed;
+  }
+
+  /* Khung Card chuẩn hóa (dùng cho Modal, Form, Danh sách sản phẩm) */
+  .card-base {
+    @apply bg-white rounded-2xl shadow-xl border border-gray-100 p-8;
+  }
 }
