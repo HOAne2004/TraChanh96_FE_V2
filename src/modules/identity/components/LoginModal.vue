@@ -32,7 +32,8 @@ const handleLogin = async() =>{
       publicId: response.userId,
       email: form.email,
       fullName: response.fullName,
-      role: response.role
+      role: response.role,
+      thumbnailUrl: (response as any).thumbnailUrl || ''
     });
 
     authStore.closeLoginModal();

@@ -2,9 +2,11 @@
 import { reactive, ref } from 'vue';
 import { authService } from '@/modules/identity/services/auth.service';
 import { useAuthStore } from '@/modules/identity/store/auth.store';
+import { useToastStore } from '@/shared/store/toast.store';
 import type { ApiError } from '@/shared/types/api';
 
 const authStore = useAuthStore();
+const toastStore = useToastStore();
 
 const isLoading = ref(false);
 const errorMessage = ref('');
@@ -28,6 +30,7 @@ const handleRegister = async () => {
   } catch (error) {
     const apiError = error as ApiError;
     errorMessage.value = apiError.message || 'Có lỗi xảy ra khi đăng ký';
+    toastStore.error(apiError.message || 'Có lỗi xảy ra khi đăng ký');
   } finally {
     isLoading.value = false;
   }
@@ -46,7 +49,7 @@ const handleVerifyOtp = async () => {
     await authService.verifyEmail({ email: form.email, token: otpCode.value });
 
     // Đăng ký thành công => Đóng Modal Đăng ký, mở Modal Đăng nhập
-    alert('Đăng ký thành công! Vui lòng đăng nhập.');
+    toastStore.success('Đăng ký thành công! Vui lòng đăng nhập.');
     authStore.closeRegisterModal();
     authStore.openLoginModal();
 
@@ -60,6 +63,7 @@ const handleVerifyOtp = async () => {
   } catch (error) {
     const apiError = error as ApiError;
     errorMessage.value = apiError.message || 'Mã OTP không chính xác hoặc đã hết hạn.';
+    toastStore.error(apiError.message || 'Mã OTP không chính xác hoặc đã hết hạn.');
   } finally {
     isLoading.value = false;
   }

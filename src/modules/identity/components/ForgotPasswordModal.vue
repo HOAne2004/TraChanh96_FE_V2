@@ -2,9 +2,11 @@
 import { reactive, ref } from 'vue';
 import { useAuthStore } from '@/modules/identity/store/auth.store';
 import { authService } from '@/modules/identity/services/auth.service';
+import { useToastStore } from '@/shared/store/toast.store';
 import type { ApiError } from '@/shared/types/api';
 
 const authStore = useAuthStore();
+const toastStore = useToastStore();
 
 // Quản lý luồng 2 bước
 const step = ref<1 | 2>(1);
@@ -45,7 +47,7 @@ const handleResetPassword = async () => {
       newPassword: form.newPassword
     });
 
-    alert('Đổi mật khẩu thành công! Vui lòng đăng nhập lại.');
+    toastStore.success('Đổi mật khẩu thành công! Vui lòng đăng nhập lại.');
 
     // Đóng modal này và mở lại modal Đăng nhập
     authStore.closeForgotPasswordModal();
@@ -73,7 +75,7 @@ const backToLogin = () => {
 <template>
   <div
     v-if="authStore.isForgotPasswordModalVisible"
-    class="fixed inset-0 z-\[9999\] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+    class="fixed inset-0 z-9999 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
     @click.self="authStore.closeForgotPasswordModal"
   >
     <div class="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">

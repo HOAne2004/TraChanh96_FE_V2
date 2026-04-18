@@ -39,6 +39,7 @@ export const useAuthStore = defineStore('auth', () =>{
     token.value = null;
     user.value = null;
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('user');
   }
 
   function openLoginModal(){
