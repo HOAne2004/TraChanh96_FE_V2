@@ -33,7 +33,7 @@ const handleLogin = async() =>{
       email: form.email,
       fullName: response.fullName,
       role: response.role,
-      thumbnailUrl: (response as any).thumbnailUrl || ''
+      thumbnailUrl: response.thumbnailUrl || ''
     });
 
     authStore.closeLoginModal();

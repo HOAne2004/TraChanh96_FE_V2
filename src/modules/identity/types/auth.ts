@@ -1,4 +1,4 @@
-import type { UserProfile } from "@/modules/identity/types/user";
+
 
 export interface LoginPayload{
   email: string;
@@ -21,6 +21,7 @@ export interface AuthResponse{
   userId: string;
   fullName: string;
   role: string;
+  thumbnailUrl?: string;
 }
 
 export interface ForgotPasswordPayload {
