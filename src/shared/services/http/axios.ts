@@ -49,7 +49,7 @@ apiClient.interceptors.response.use(
     // 1. KHI THÀNH CÔNG (HTTP Status 200 - 299)
     // Lột bỏ lớp vỏ Axios, chỉ trả về đúng cái 'data' bên trong
     // (chính là object { data, message, status, success } từ .NET)
-        return response.data;
+        return response;
     },
     (error: AxiosError) => {
     // 2. KHI THẤT BẠI (HTTP Status 4xx, 5xx)
@@ -82,12 +82,12 @@ apiClient.interceptors.response.use(
             // mà trả về để các trang tự hiển thị thông báo riêng cho phù hợp.
         }
 
-        console.error("Lỗi từ API:", errorData.message || "Lỗi không xác định");
+        console.error("Lỗi từ API:", errorData?.message || "Lỗi không xác định");
 
-        return Promise.reject(errorData);
+        return Promise.reject(error);
       }
       toastStore.error("Lỗi kết nối mạng hoặc server không phản hồi");
-      return Promise.reject({message: "Lỗi kết nối mạng hoặc server không phản hồi"});
+      return Promise.reject(error);
     }
 );
 
