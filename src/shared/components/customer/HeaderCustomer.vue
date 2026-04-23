@@ -20,10 +20,10 @@ const toggleMobileMenu = () => isMobileMenuOpen.value = !isMobileMenuOpen.value;
       </RouterLink>
 
       <nav class="hidden md:flex gap-8 font-medium text-gray-600">
-        <RouterLink to="/" class="hover:text-primary-500 transition-colors">Trang chủ</RouterLink>
-        <RouterLink to="#" class="hover:text-primary-500 transition-colors">Thực đơn</RouterLink>
-        <RouterLink to="#" class="hover:text-primary-500 transition-colors">Về chúng tôi</RouterLink>
-        <RouterLink to="#" class="hover:text-primary-500 transition-colors">Tin tức</RouterLink>
+        <RouterLink to="/" exact-active-class="text-primary-600 !border-primary-500 font-semibold" class="hover:text-primary-500 transition-colors border-b-2 border-transparent py-1">Trang chủ</RouterLink>
+        <RouterLink to="/menu" exact-active-class="text-primary-600 !border-primary-500 font-semibold" class="hover:text-primary-500 transition-colors border-b-2 border-transparent py-1">Thực đơn</RouterLink>
+        <RouterLink to="#" exact-active-class="text-primary-600 !border-primary-500 font-semibold" class="hover:text-primary-500 transition-colors border-b-2 border-transparent py-1">Về chúng tôi</RouterLink>
+        <RouterLink to="#" exact-active-class="text-primary-600 !border-primary-500 font-semibold" class="hover:text-primary-500 transition-colors border-b-2 border-transparent py-1">Tin tức</RouterLink>
       </nav>
 
       <div class="flex items-center gap-4">
@@ -52,10 +52,9 @@ const toggleMobileMenu = () => isMobileMenuOpen.value = !isMobileMenuOpen.value;
 
     <div v-show="isMobileMenuOpen" class="md:hidden border-t border-gray-100 bg-white shadow-lg">
       <nav class="flex flex-col font-medium text-gray-600">
-        <RouterLink to="/" class="px-4 py-3 hover:bg-gray-50 hover:text-primary-500 border-b border-gray-50">Trang chủ</RouterLink>
-        <RouterLink to="#" class="px-4 py-3 hover:bg-gray-50 hover:text-primary-500 border-b border-gray-50">Thực đơn</RouterLink>
-        <RouterLink to="#" class="px-4 py-3 hover:bg-gray-50 hover:text-primary-500 border-b border-gray-50">Về chúng tôi</RouterLink>
-
+      <RouterLink to="/" exact-active-class="bg-primary-50 text-primary-600 !border-primary-500 font-semibold" class="px-4 py-3 hover:bg-gray-50 hover:text-primary-500 border-b border-b-gray-50 border-l-4 border-l-transparent transition-colors">Trang chủ</RouterLink>
+<RouterLink to="/menu" exact-active-class="bg-primary-50 text-primary-600 !border-primary-500 font-semibold" class="px-4 py-3 hover:bg-gray-50 hover:text-primary-500 border-b border-b-gray-50 border-l-4 border-l-transparent transition-colors">Thực đơn</RouterLink>
+<RouterLink to="#" exact-active-class="bg-primary-50 text-primary-600 !border-primary-500 font-semibold" class="px-4 py-3 hover:bg-gray-50 hover:text-primary-500 border-b border-b-gray-50 border-l-4 border-l-transparent transition-colors">Về chúng tôi</RouterLink>
         <div class="p-4 bg-gray-50">
           <UserMenu />
         </div>

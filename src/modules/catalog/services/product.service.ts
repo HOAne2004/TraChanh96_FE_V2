@@ -1,11 +1,7 @@
 import apiClient from "@/shared/services/http/axios";
 import type { ApiResponse } from "@/shared/types/api";
-import type {
-  CustomerProductCard,
-  ProductDetail,
-  ProductFilterParams,
-  PagedResult
-} from "../types/product";
+import type { CustomerProductCard, ProductDetail, ProductFilterParams } from "../types/product";
+import type { PagedResult } from "@/shared/types/api";
 
 export const productService = {
   // Lấy danh sách sản phẩm cho khách hàng (có phân trang & lọc)

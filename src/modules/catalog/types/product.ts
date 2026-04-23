@@ -1,7 +1,8 @@
 // 1. Dùng cho trang Danh sách sản phẩm (Menu)
 // Ánh xạ từ CustomerProductCardDto trong GetCatalogProductsQueryHandler.cs
 export interface CustomerProductCard {
-  id: string; // Guid
+  id: string;
+  categoryId: number;
   name: string;
   slug: string;
   imageUrl?: string;
@@ -9,6 +10,9 @@ export interface CustomerProductCard {
   currency: string;
   totalSold: number;
   totalRating: number;
+  publishedAt: Date;
+  createdAt: Date;
+  status: string;
 }
 
 // 2. Các DTO dùng cho trang Chi tiết sản phẩm
@@ -20,6 +24,8 @@ export interface ProductSize {
 
 export interface ProductTopping {
   toppingId: number;
+  name: string;
+  imageUrl?: string;
   priceAmount: number;
   maxQuantity: number;
   currency: string;
@@ -39,12 +45,18 @@ export interface ProductDetail {
   basePriceCurrency: string;
   prepTimeInMinutes: number;
   status: string;
+  totalSold: number;
+  totalRating: number;
   allowedIceLevels: string[];
   allowedSugarLevels: string[];
   sizes: ProductSize[];
   toppings: ProductTopping[];
+  publishedAt: Date;
 }
 
+export type ModalProductOption = Pick<ProductDetail,
+  'id' | 'productType' | 'allowedIceLevels' | 'allowedSugarLevels' | 'sizes' | 'toppings'
+>;
 // Interface cho bộ lọc khi khách hàng tìm kiếm / chọn danh mục
 export interface ProductFilterParams {
   searchTerm?: string;
@@ -53,11 +65,29 @@ export interface ProductFilterParams {
   pageSize?: number;
 }
 
-// Kiểu phân trang (PagedResult)
-export interface PagedResult<T> {
-  items: T[];
-  totalCount: number;
-  pageIndex: number;
-  pageSize: number;
-  totalPages: number;
+// Định nghĩa Topping đã chọn
+export interface SelectedTopping {
+  toppingId: number;
+  name: string;
+  quantity: number;
+  priceAmount: number;
+}
+
+// Cấu hình khách hàng vừa chọn (Đá, Đường, Size...)
+export interface OptionChangePayload {
+  size?: string;
+  sugar: string | null;
+  ice: string | null;
+  toppings: SelectedTopping[];
+}
+
+// Dữ liệu 1 món hàng ném vào Giỏ hàng
+export interface CartItemPayload {
+  productId: string;
+  productName: string;
+  basePrice: number;
+  imageUrl?: string;
+  options: OptionChangePayload;
+  totalItemPrice: number;
+  quantity: number;
 }
