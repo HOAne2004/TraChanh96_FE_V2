@@ -1,29 +1,35 @@
 import apiClient from "@/shared/services/http/axios";
 import type { LoginPayload, AuthResponse, RegisterPayload, VerifyEmailPayload, ForgotPasswordPayload, ResetPasswordPayload } from "@/modules/identity/types/auth";
+import type { ApiResponse } from "@/shared/types/api";
 
 export const authService = {
-  async login(data: LoginPayload): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/identity/auth/login', data);
-    return response.data;
+  login(data: LoginPayload): Promise<AuthResponse> {
+    return apiClient
+      .post<ApiResponse<AuthResponse>>('/identity/auth/login', data)
+      .then((res) => res.data.data);
   },
 
-  async register(data: RegisterPayload): Promise<string> {
-    const response = await apiClient.post<string>('/identity/auth/register', data);
-    return response.data;
+  register(data: RegisterPayload): Promise<string> {
+    return apiClient
+      .post<ApiResponse<null>>('/identity/auth/register', data)
+      .then((res) => res.data.message || 'Đăng ký thành công');
   },
 
-  async verifyEmail(data: VerifyEmailPayload): Promise<string> {
-    const response = await apiClient.post<string>('/identity/auth/verify-email', data);
-    return response.data;
+  verifyEmail(data: VerifyEmailPayload): Promise<string> {
+    return apiClient
+      .post<ApiResponse<null>>('/identity/auth/verify-email', data)
+      .then((res) => res.data.message || 'Xác thực thành công');
   },
 
-  async forgotPassword(data: ForgotPasswordPayload): Promise<string> {
-    const response = await apiClient.post<string>('/identity/auth/forgot-password', data);
-    return response.data;
+  forgotPassword(data: ForgotPasswordPayload): Promise<string> {
+    return apiClient
+      .post<ApiResponse<null>>('/identity/auth/forgot-password', data)
+      .then((res) => res.data.message || 'Đã gửi yêu cầu khôi phục');
   },
 
-  async resetPassword(data: ResetPasswordPayload): Promise<string> {
-    const response = await apiClient.post<string>('/identity/auth/reset-password', data);
-    return response.data;
+  resetPassword(data: ResetPasswordPayload): Promise<string> {
+    return apiClient
+      .post<ApiResponse<null>>('/identity/auth/reset-password', data)
+      .then((res) => res.data.message || 'Khôi phục mật khẩu thành công');
   }
 }

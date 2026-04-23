@@ -51,3 +51,17 @@ export const userService = {
     .then((res) => res.data.message || '');
   }
 };
+
+/* Cấu tạo cho 1 hàm service
+ * 1. Tên hàm: Đặt là VERB + Action theo sau
+ *    Vi dụ: getUserById, getProfile, updateProfile
+ * 2. Tham số: Nhận vào là dữ liệu cần gửi lên API
+ * Kiểu dữ liệu được định nghĩa bằng TypeScript interface (UpdateProfilePayload)
+ * để đảm bảo an toàn kiểu.
+ * 3. Trả về:
+ *    - Promise<T> à kiểu trả về của hàm bất đồng bộ, trong đó T là kiểu dữ liệu trả về của API (res.data.data hoặc res.data.message)
+ *    - Kết quả trả về của API là một Object có cấu trúc ApiResponse<T> phụ thuộc vào command phía BE trả về
+ * 4. Cách sử dụng:
+ *    - Gọi hàm và await kết quả
+ *    - Sử dụng try-catch để xử lý lỗi
+ */

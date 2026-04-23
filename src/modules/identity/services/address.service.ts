@@ -1,40 +1,46 @@
 import apiClient from '@/shared/services/http/axios';
 import type { AddressDto, AddressFormRequest } from '../types/address';
+import type { ApiResponse } from "@/shared/types/api";
 
 const BASE_URL = '/identity/users/me/addresses';
 
 export const addressService = {
   // 1. Lấy danh sách địa chỉ
-  async getMyAddresses(): Promise<AddressDto[]> {
-    const response = (await apiClient.get(BASE_URL)) as Record<string, unknown>;
-    return (response.data || response.Data || response || []) as AddressDto[];
+  getMyAddresses(): Promise<AddressDto[]> {
+    return apiClient
+      .get<ApiResponse<AddressDto[]>>(BASE_URL)
+      .then((res) => res.data.data);
   },
 
   // 2. Lấy chi tiết 1 địa chỉ (dùng khi click nút Sửa)
-  async getAddressById(id: number): Promise<AddressDto> {
-    const response = (await apiClient.get(`${BASE_URL}/${id}`)) as Record<string, unknown>;
-    return (response.data || response.Data || response) as AddressDto;
+  getAddressById(id: number): Promise<AddressDto> {
+    return apiClient
+      .get<ApiResponse<AddressDto>>(`${BASE_URL}/${id}`)
+      .then((res) => res.data.data);
   },
 
   // 3. Thêm địa chỉ mới
-  async addAddress(data: AddressFormRequest): Promise<string> {
-    const response = (await apiClient.post(BASE_URL, data)) as Record<string, unknown>;
-    return (response.message || response.Message || 'Thêm địa chỉ thành công') as string;
+  addAddress(data: AddressFormRequest): Promise<string> {
+    return apiClient
+      .post<ApiResponse<null>>(BASE_URL, data)
+      .then((res) => res.data.message || 'Thêm địa chỉ thành công');
   },
 
-  async updateAddress(id: number, data: AddressFormRequest): Promise<string> {
+  // 4. Cập nhật địa chỉ
+  updateAddress(id: number, data: AddressFormRequest): Promise<string> {
     const payload = {
       ...data,
       addressId: id
     };
-
-    const response = (await apiClient.put(`${BASE_URL}/${id}`, payload)) as Record<string, unknown>;
-    return (response.message || response.Message || 'Cập nhật địa chỉ thành công') as string;
+    return apiClient
+      .put<ApiResponse<null>>(`${BASE_URL}/${id}`, payload)
+      .then((res) => res.data.message || 'Cập nhật địa chỉ thành công');
   },
 
   // 5. Xóa địa chỉ
-  async deleteAddress(id: number): Promise<string> {
-    const response = (await apiClient.delete(`${BASE_URL}/${id}`)) as Record<string, unknown>;
-    return (response.message || response.Message || 'Đã xóa địa chỉ') as string;
+  deleteAddress(id: number): Promise<string> {
+    return apiClient
+      .delete<ApiResponse<null>>(`${BASE_URL}/${id}`)
+      .then((res) => res.data.message || 'Đã xóa địa chỉ');
   }
 };
