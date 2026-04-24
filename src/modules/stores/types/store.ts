@@ -1,58 +1,71 @@
-import type { Area } from './area';
-
-// Đồng bộ với Enum StoreStatusEnum trên Backend
-export enum StoreStatus {
-  Draft = 'Draft',
-  ComingSoon = 'ComingSoon',
-  Active = 'Active',
-  TemporarilyClosed = 'TemporarilyClosed',
-  ClosedDown = 'ClosedDown'
+// 1. Param tìm kiếm
+export interface GetCustomerStoresParams {
+  pageIndex?: number;
+  pageSize?: number;
+  searchTerm?: string;
+  userLat?: number;
+  userLng?: number;
 }
 
-// Ánh xạ từ OperatingHourResponseDto / OperatingHourRequestDto
-export interface OperatingHour {
-  dayOfWeek: number; // 0 (Sunday) đến 6 (Saturday) - Chuẩn JS và C#
-  openTime: string | null; // Format "HH:mm" (vd: "08:00")
-  closeTime: string | null; 
-  isClosed: boolean;
-}
-
-// Ánh xạ từ StoreCustomerListDto (Dành cho UI App Khách hàng)
+// 2. DTO Danh sách quán (Đã thêm openDate)
 export interface StoreCustomerList {
-  publicId: string;  
+  publicId: string;
+  slug: string;
   name: string;
   fullAddress: string;
   imageUrl?: string;
   distanceKm: number | null;
   isOpenNow: boolean;
-  closingTimeToday: string | null; // Dạng "22:30"
+  closingTimeToday: string | null;
+  openDate: string | null; 
 }
 
-// Ánh xạ từ StoreAdminListDto (Dành cho Dashboard Admin)
-export interface StoreAdminList {
-  publicId: string;
-  storeCode: string;
-  name: string;
-  status: StoreStatus | string; 
-  fullAddress: string;
+// 3. Các Type phụ trợ cho trang Chi tiết
+export interface OperatingHour {
+  dayOfWeek: number; // 0: Chủ nhật, 1: Thứ 2...
+  openTime: string;
+  closeTime: string;
+  isClosed: boolean;
 }
 
-// Ánh xạ từ StoreDetailDto (Dành cho màn hình Chi tiết / Chỉnh sửa của Admin)
-export interface StoreDetail {
-  publicId: string;
-  storeCode: string;
+export interface Table {
+  tableId: number;
   name: string;
+  seatCapacity: number;
+  isActive: boolean;
+}
+
+export interface Area {
+  areaId: number;
+  name: string;
+  tables: Table[];
+}
+
+// 4. DTO Chi tiết 1 quán (Kèm Lịch & Bàn)
+export interface StoreCustomerDetail {
+  publicId: string;
+  name: string;
+  slug: string;
   fullAddress: string;
-  status: StoreStatus | string;
-  operatingHours: OperatingHour[];
+  phoneNumber: string | null;
+  wifiPassword: string | null;
+  description: string | null;
+  imageUrl: string | null;
+  isOpenNow: boolean;
+  openTimeToday: string | null;
+  closingTimeToday: string | null;
+  openDate: string | null;
+  weeklySchedule: OperatingHour[];
   areas: Area[];
 }
 
-// (Tùy chọn) Param cho API tìm kiếm quán của Khách hàng
-export interface GetCustomerStoresParams {
-  userLatitude?: number;
-  userLongitude?: number;
-  searchTerm?: string;
-  pageIndex?: number;
-  pageSize?: number;
+// 5. DTO Quét mã QR
+export interface TableQrInfo {
+  storePublicId: string;
+  storeName: string;
+  areaId: number;
+  areaName: string;
+  tableId: number;
+  tableName: string;
+  seatCapacity: number;
 }

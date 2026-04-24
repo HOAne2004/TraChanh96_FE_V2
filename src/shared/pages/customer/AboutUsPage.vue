@@ -14,7 +14,7 @@ const pageLoading = ref(true)
 onMounted(async () => {
   try {
     // Gọi API lấy danh sách chi nhánh (có thể truyền pageSize lớn để lấy hết)
-    await customerStore.fetchStores({ pageIndex: 1, pageSize: 50 })
+    await customerStore.fetchActiveStores({ pageIndex: 1, pageSize: 50 })
   } catch (error) {
     console.error('Lỗi tải danh sách cửa hàng:', error)
   } finally {
@@ -67,10 +67,10 @@ const showLess = () => {
 }
 
 // Khi người dùng bấm "Chọn quán" từ thẻ StoreCard
-const handleSelectStore = (storeId: string) => {
-  customerStore.selectedStore(storeId)
+const handleSelectStore = (slug: string) => {
+  customerStore.setSelectedStore(slug)
   // Chuyển hướng sang trang Menu sau khi chọn quán thành công
-  router.push('/menu')
+  router.push(`/stores/${slug}`)
 }
 </script>
 

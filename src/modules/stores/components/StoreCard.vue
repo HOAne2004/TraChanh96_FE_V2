@@ -8,7 +8,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'select', storeId: string): void;
+  (e: 'select', slug: string): void;
 }>();
 
 // Sửa lại Link Google Maps cho chuẩn xác (Link cũ của bạn bị sai domain)
@@ -20,13 +20,13 @@ const mapLink = computed(() => {
 <template>
   <div
     class="shrink-0 w-80 snap-start bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col border border-gray-100 group cursor-pointer"
-    @click="emit('select', store.publicId)"
+    @click="emit('select', store.slug)"
   >
     <div class="relative h-48 overflow-hidden bg-gray-50">
       <img
         :src="store.imageUrl"
         :alt="store.name"
-        v-fallback-image="defaultStoreImg"
+        v-fallback-img="defaultStoreImg"
         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
       />
 
@@ -93,7 +93,7 @@ const mapLink = computed(() => {
       
       <button
         class="btn-primary flex-1 text-sm"
-        @click.stop="emit('select', store.publicId)"
+        @click.stop="emit('select', store.slug)"
       >
         Chọn quán
       </button>

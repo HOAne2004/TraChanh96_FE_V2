@@ -115,7 +115,7 @@ const activeStoreInfo = computed(() => {
           clip-rule="evenodd"
         />
       </svg>
-      Bạn cần chọn cửa hàng để xem thực đơn
+      Bạn cần chọn cửa hàng để đặt hàng
     </p>
   </div>
 </template>
