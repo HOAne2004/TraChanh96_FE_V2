@@ -78,7 +78,7 @@ const formatSold = (sold: number) => {
 <template>
   <div class="group shrink-0 w-full max-w-[220px] bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full relative transition-all duration-300 hover:shadow-lg hover:-translate-y-1 isolate z-0"
     :class="{ 'opacity-80': isDisabled }">
-    <div v-if="availabilityStatus" class="absolute inset-0 z-20 flex items-center justify-center bg-gray-900/30 pointer-events-none">
+    <div v-if="availabilityStatus" class="absolute inset-0 z-20 flex items-center justify-center bg-gray-900/10 pointer-events-none">
       <span class="text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm" :class="availabilityStatus.class">
         {{ availabilityStatus.label }}
       </span>

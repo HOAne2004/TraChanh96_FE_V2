@@ -4,6 +4,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useCategoryStore } from '@/modules/catalog/store/category.store';
 import { useProductStore } from '@/modules/catalog/store/product.store';
 import { useToastStore } from '@/shared/store/toast.store';
+import { useStoreStore } from '@/modules/stores/stores/store.store';
 
 import type { CustomerProductCard, CartItemPayload } from '@/modules/catalog/types/product';
 
@@ -11,6 +12,7 @@ import ProductFilter from '@/modules/catalog/components/ProductFilter.vue';
 import SectionWrapper from '@/shared/components/ui/SectionWrapper.vue';
 import ProductCard from '@/modules/catalog/components/ProductCard.vue';
 import QuickAddModal from '@/modules/catalog/components/QuickAddModal.vue';
+import StoreFilter from '@/modules/stores/components/StoreFilter.vue';
 
 const isModalOpen = ref(false);
 const selectedProductForModal = ref<CustomerProductCard | null>(null);
@@ -18,6 +20,7 @@ const selectedProductForModal = ref<CustomerProductCard | null>(null);
 const categoryStore = useCategoryStore();
 const productStore = useProductStore();
 const toastStore = useToastStore();
+const storeStore = useStoreStore();
 
 // Trạng thái chung
 const isLoading = computed(() => categoryStore.isLoading || productStore.isLoading);
@@ -52,6 +55,10 @@ watch(currentSearchTerm, () => {
 watch(selectedCategoryIds, () => {
   fetchProductsByFilter();
 }, { deep: true });
+
+watch(() => storeStore.selectedStoreId, () => {
+  fetchProductsByFilter();
+});
 
 // Data gộp: Vừa lọc theo CategoryId (nếu có click), vừa tự động bỏ nhóm rỗng
 const displayedSections = computed(() => {
@@ -107,6 +114,10 @@ onMounted(() => {
 
         <div class="hidden md:block md:col-span-4 lg:col-span-3">
           <div class="sticky top-24 space-y-6">
+            <StoreFilter 
+              :stores="storeStore.stores" 
+              v-model="storeStore.selectedStoreId" 
+            />
             <ProductFilter
               :categories="categoryStore.categories"
               v-model="selectedCategoryIds"

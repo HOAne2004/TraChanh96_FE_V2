@@ -61,6 +61,7 @@ export type ModalProductOption = Pick<ProductDetail,
 export interface ProductFilterParams {
   searchTerm?: string;
   categoryId?: number;
+  storeId?: string;
   pageIndex?: number;
   pageSize?: number;
 }

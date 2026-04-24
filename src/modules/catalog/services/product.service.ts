@@ -11,10 +11,12 @@ export const productService = {
       .then((res) => res.data.data);
   },
 
-  // Lấy chi tiết sản phẩm theo Slug (Khi khách click vào 1 món)
-  getProductBySlug(slug: string): Promise<ProductDetail> {
+  getProductBySlug(slug: string, storeId?: string): Promise<ProductDetail> {
+    const url = storeId 
+      ? `/catalog/products/${slug}?storeId=${storeId}` 
+      : `/catalog/products/${slug}`;
     return apiClient
-      .get<ApiResponse<ProductDetail>>(`/catalog/products/${slug}`)
+      .get<ApiResponse<ProductDetail>>(url)
       .then((res) => res.data.data);
   }
 };

@@ -1,16 +1,19 @@
-
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useToastStore } from '@/shared/store/toast.store';
 import { useProductStore } from '@/modules/catalog/store/product.store';
+import { useStoreStore } from '@/modules/stores/stores/store.store'; 
+
 import ProductOptionForm from '@/modules/catalog/components/ProductOptionForm.vue';
 import type { OptionChangePayload } from '@/modules/catalog/types/product';
 import SectionWrapper from '@/shared/components/ui/SectionWrapper.vue';
 
 const route = useRoute();
+const router = useRouter();
 const toastStore = useToastStore();
 const productStore = useProductStore();
+const storeStore = useStoreStore(); 
 
 // --- STATE ---
 const isLoading = computed(() => productStore.isLoadingDetail);
@@ -26,7 +29,8 @@ const calculatedTotal = computed(() => {
 });
 
 const isDisabledStatus = computed(() => {
-  return product.value?.status === 'Inactive' || product.value?.status === 'ComingSoon';
+  const status = product.value?.status;
+  return status === 'Inactive' || status === 'ComingSoon' || status === 'OutOfStock';
 });
 
 // --- METHODS ---
@@ -39,8 +43,9 @@ const handleConfigChange = (payload: OptionChangePayload) => {
 };
 
 const getButtonText = () => {
-  if (product.value?.status === 'Inactive') return 'Tạm hết hàng';
+  if (product.value?.status === 'Inactive') return 'Ngừng kinh doanh';
   if (product.value?.status === 'ComingSoon') return 'Sắp ra mắt';
+  if (product.value?.status === 'OutOfStock') return 'Hết hàng tại quán';
   return 'Thêm vào giỏ';
 };
 
@@ -64,6 +69,13 @@ const submitAddToCart = () => {
 
 // --- API CALL ---
 onMounted(() => {
+  // Cảnh báo nhẹ nếu lỡ vào thẳng link mà chưa chọn quán
+  if (!storeStore.selectedStoreId) {
+    toastStore.error('Vui lòng chọn cửa hàng trước để xem giá chính xác!');
+    router.push('/menu'); // Tùy chọn: Đá về trang menu
+    return;
+  }
+
   const slug = route.params.slug as string;
   if (slug) {
     productStore.fetchProductDetail(slug);
@@ -112,7 +124,8 @@ const formatSold = (sold: number) => {
               <img 
                 :src="product.imageUrl" 
                 :alt="product.name"
-                class="w-full h-full object-cover rounded-2xl shadow-md"
+                class="w-full h-full object-cover rounded-2xl shadow-md transition-all duration-300"
+                :class="{ 'opacity-50 grayscale': isDisabledStatus }" 
                 v-fallback-img
               />
               
@@ -120,7 +133,10 @@ const formatSold = (sold: number) => {
                 <span v-if="product.status === 'ComingSoon'" class="bg-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
                   Sắp ra mắt
                 </span>
-                <span v-if="product.totalSold > 500" class="bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1 animate-pulse">
+                <span v-else-if="product.status === 'OutOfStock' || product.status === 'Inactive'" class="bg-gray-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+                  Tạm hết
+                </span>
+                <span v-else-if="product.totalSold > 500" class="bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1 animate-pulse">
                   🔥 HOT
                 </span>
               </div>
@@ -144,12 +160,12 @@ const formatSold = (sold: number) => {
                 </div>
               </div>
 
-              <div class="text-3xl font-black text-primary-500">
+              <div class="text-3xl font-black text-primary-500" :class="{ 'text-gray-400': isDisabledStatus }">
                 {{ formatPrice(product.basePriceAmount) }}
               </div>
             </div>
 
-            <div>
+            <div :class="{ 'opacity-60 pointer-events-none': isDisabledStatus }">
               <ProductOptionForm 
                 :product="product" 
                 @update:price="handlePriceUpdate"
@@ -160,8 +176,8 @@ const formatSold = (sold: number) => {
             <div class="hidden md:block mt-4 pt-6 border-t border-gray-100">
               <button 
                 @click="submitAddToCart"
-                :disabled="product.status === 'Inactive' || product.status === 'ComingSoon'"
-                class="w-full bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold text-lg py-4 rounded-xl transition-all shadow-lg shadow-primary-500/30 flex items-center justify-center gap-3"
+                :disabled="isDisabledStatus"
+                class="w-full bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold text-lg py-4 rounded-xl transition-all shadow-lg shadow-primary-500/30 flex items-center justify-center gap-3 disabled:shadow-none"
               >
                 <span>{{ getButtonText() }}</span>
                 <span v-if="!isDisabledStatus" class="w-1.5 h-1.5 rounded-full bg-white/50"></span>
@@ -207,7 +223,7 @@ const formatSold = (sold: number) => {
        <button 
           @click="submitAddToCart"
           :disabled="isDisabledStatus"
-          class="w-full bg-primary-500 disabled:bg-gray-300 text-white font-bold text-base py-3.5 rounded-xl flex items-center justify-center gap-2"
+          class="w-full bg-primary-500 disabled:bg-gray-300 text-white font-bold text-base py-3.5 rounded-xl flex items-center justify-center gap-2 disabled:shadow-none"
         >
           <span>{{ getButtonText() }}</span>
           <span v-if="!isDisabledStatus">-</span>
