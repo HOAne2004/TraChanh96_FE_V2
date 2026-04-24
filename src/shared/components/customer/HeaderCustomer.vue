@@ -22,7 +22,7 @@ const toggleMobileMenu = () => isMobileMenuOpen.value = !isMobileMenuOpen.value;
       <nav class="hidden md:flex gap-8 font-medium text-gray-600">
         <RouterLink to="/" exact-active-class="text-primary-600 !border-primary-500 font-semibold" class="hover:text-primary-500 transition-colors border-b-2 border-transparent py-1">Trang chủ</RouterLink>
         <RouterLink to="/menu" exact-active-class="text-primary-600 !border-primary-500 font-semibold" class="hover:text-primary-500 transition-colors border-b-2 border-transparent py-1">Thực đơn</RouterLink>
-        <RouterLink to="#" exact-active-class="text-primary-600 !border-primary-500 font-semibold" class="hover:text-primary-500 transition-colors border-b-2 border-transparent py-1">Về chúng tôi</RouterLink>
+        <RouterLink to="/aboutus" exact-active-class="text-primary-600 !border-primary-500 font-semibold" class="hover:text-primary-500 transition-colors border-b-2 border-transparent py-1">Về chúng tôi</RouterLink>
         <RouterLink to="#" exact-active-class="text-primary-600 !border-primary-500 font-semibold" class="hover:text-primary-500 transition-colors border-b-2 border-transparent py-1">Tin tức</RouterLink>
       </nav>
 

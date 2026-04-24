@@ -3,6 +3,7 @@ import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import HomePage from '@/shared/pages/customer/HomePage.vue'
 import { identityRoutes } from '@/modules/identity/router';
 import { catalogRoutes } from '@/modules/catalog/router';
+import { storeRoutes } from '@/modules/stores/router';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,6 +19,7 @@ const router = createRouter({
         },
         ...identityRoutes,
         ...catalogRoutes,
+        ...storeRoutes,
       ]
     }
   ],
