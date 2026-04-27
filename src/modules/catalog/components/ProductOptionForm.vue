@@ -97,7 +97,7 @@ const calculatePrice = () => {
   // Giả sử giá Base đang được truyền ở Product cha, Form chỉ tính tiền Option cộng thêm
   let extraPrice = 0;
   if (selectedSize.value) {
-    extraPrice += selectedSize.value.priceAmount;
+    extraPrice += selectedSize.value.priceModifier;
   }
   selectedToppings.value.forEach(t => {
     extraPrice += (t.priceAmount * t.quantity);
@@ -182,7 +182,7 @@ watch(() => props.product, (newVal) => {
           <span class="text-lg font-extrabold mb-1">{{ size.size }}</span>
 
           <span class="text-xs font-medium" :class="selectedSize?.size === size.size ? 'text-primary-600' : 'text-gray-400'">
-            {{ size.priceAmount > 0 ? `+ ${formatPrice(size.priceAmount)}` : 'Miễn phí' }}
+            {{ size.priceModifier > 0 ? `+ ${formatPrice(size.priceModifier)}` : 'Miễn phí' }}
           </span>
 
           <div v-if="selectedSize?.size === size.size" class="absolute -top-2 -right-2 bg-primary-500 text-white rounded-full p-0.5 shadow-sm">

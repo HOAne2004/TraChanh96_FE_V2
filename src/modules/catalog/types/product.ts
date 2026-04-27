@@ -9,7 +9,8 @@ export interface CustomerProductCard {
   basePrice: number;
   currency: string;
   totalSold: number;
-  totalRating: number;
+  averageRating: number;
+  ratingCount: number;
   publishedAt: Date;
   createdAt: Date;
   status: string;
@@ -18,7 +19,7 @@ export interface CustomerProductCard {
 // 2. Các DTO dùng cho trang Chi tiết sản phẩm
 export interface ProductSize {
   size: string; // "S", "M", "L"
-  priceAmount: number;
+  priceModifier: number;
   currency: string;
 }
 
@@ -46,7 +47,8 @@ export interface ProductDetail {
   prepTimeInMinutes: number;
   status: string;
   totalSold: number;
-  totalRating: number;
+  averageRating: number;
+  ratingCount: number;
   allowedIceLevels: string[];
   allowedSugarLevels: string[];
   sizes: ProductSize[];

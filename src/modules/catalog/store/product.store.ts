@@ -25,9 +25,10 @@ export const useProductStore = defineStore('customerProduct', () => {
 
     const storeStore = useStoreStore();
     const finalParams = { ...params };
-    if (storeStore.selectedStoreId) {
-      finalParams.storeId = storeStore.selectedStoreId;
-    }
+    // TẠM THỜI COMMENT LẠI ĐỂ LẤY FULL MENU CHO MỌI QUÁN
+    // if (storeStore.selectedStoreId) {
+    //   finalParams.storeId = storeStore.selectedStoreId;
+    // }
     try {
       const data = await productService.getCatalogProducts(finalParams);
       products.value = data.items;
@@ -43,7 +44,7 @@ export const useProductStore = defineStore('customerProduct', () => {
   const fetchProductDetail = async (slug: string) => {
     isLoadingDetail.value = true;
     error.value = null;
-    currentProductDetail.value = null; 
+    currentProductDetail.value = null;
     const storeStore = useStoreStore();
     const currentStoreId = storeStore.selectedStoreId || undefined;
 
