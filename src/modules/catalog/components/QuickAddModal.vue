@@ -27,8 +27,9 @@ const currentConfig = ref<OptionChangePayload | null>(null);
 
 // Tính tổng tiền = Giá gốc (summary) + Giá tùy chọn (form)
 const calculatedTotal = computed(() => {
-  const base = props.productSummary?.basePrice || 0;
-  return base + extraPrice.value;
+  const base = Number(props.productSummary?.basePrice) || 0;
+  const extra = Number(extraPrice.value) || 0;
+  return base + extra;
 });
 
 // Lắng nghe Form phát ra giá tiền
@@ -76,7 +77,8 @@ watch(() => props.isOpen, (newVal) => {
 
 // Format tiền
 const formatPrice = (amount: number) => {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+  const safeAmount = Number(amount) || 0;
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(safeAmount);
 };
 </script>
 

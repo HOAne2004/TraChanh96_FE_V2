@@ -70,7 +70,8 @@ const handleQuickAdd = () => {
 
 // --- FORMATTERS ---
 const formatPrice = (price: number) => {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+  const safePrice = Number(price) || 0;
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(safePrice);
 };
 
 const formatSold = (sold: number) => {

@@ -97,10 +97,10 @@ const calculatePrice = () => {
   // Giả sử giá Base đang được truyền ở Product cha, Form chỉ tính tiền Option cộng thêm
   let extraPrice = 0;
   if (selectedSize.value) {
-    extraPrice += selectedSize.value.priceModifier;
+    extraPrice += Number(selectedSize.value.priceModifier) || 0;
   }
   selectedToppings.value.forEach(t => {
-    extraPrice += (t.priceAmount * t.quantity);
+    extraPrice += (Number(t.priceAmount) || 0) * (Number(t.quantity) || 1);
   });
   return extraPrice;
 };
@@ -119,7 +119,8 @@ const emitChanges = () => {
 
 // Format tiền tệ
 const formatPrice = (amount: number) => {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+  const safeAmount = Number(amount) || 0;
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(safeAmount);
 };
 
 const hasOptions = computed(() => {
@@ -132,7 +133,7 @@ const hasOptions = computed(() => {
 // Tự động chọn Size đầu tiên, Đường Mặc định, Đá Mặc định khi Component Load hoặc khi Data thay đổi
 watch(() => props.product, (newVal) => {
   if (!newVal) return;
-  
+
   if (newVal.sizes && newVal.sizes.length > 0) {
     selectedSize.value = newVal.sizes[0] || null;
   } else {
@@ -180,10 +181,6 @@ watch(() => props.product, (newVal) => {
           ]"
         >
           <span class="text-lg font-extrabold mb-1">{{ size.size }}</span>
-
-          <span class="text-xs font-medium" :class="selectedSize?.size === size.size ? 'text-primary-600' : 'text-gray-400'">
-            {{ size.priceModifier > 0 ? `+ ${formatPrice(size.priceModifier)}` : 'Miễn phí' }}
-          </span>
 
           <div v-if="selectedSize?.size === size.size" class="absolute -top-2 -right-2 bg-primary-500 text-white rounded-full p-0.5 shadow-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
@@ -261,7 +258,7 @@ watch(() => props.product, (newVal) => {
               </div>
               <div>
                 <p class="font-medium text-gray-800 text-sm">Topping #{{ topping.toppingId }}</p>
-                <p class="text-xs text-primary-600 font-bold">+ {{ formatPrice(topping.priceAmount) }}</p>
+                <p class="text-xs text-primary-600 font-bold">+ {{ formatPrice(Number(topping.priceAmount) || 0) }}</p>
               </div>
             </div>
           </div>
