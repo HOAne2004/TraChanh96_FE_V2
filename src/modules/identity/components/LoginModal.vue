@@ -2,8 +2,8 @@
 import { reactive, ref } from 'vue';
 import { useAuthStore } from '@/modules/identity/store/auth.store';
 import { authService } from '@/modules/identity/services/auth.service';
-import type { ApiError } from '@/shared/types/api';
 import { useToastStore } from '@/shared/store/toast.store';
+import type { ApiError } from '@/shared/types/api';
 
 const authStore = useAuthStore();
 const toastStore = useToastStore();
@@ -23,7 +23,7 @@ const handleLogin = async () => {
   try {
     const response = await authService.login(form);
 
-    // SỬA: Dùng setTokens thay vì setToken
+    // Dùng setTokens thay vì setToken
     authStore.setTokens(response.accessToken, response.refreshToken);
 
     // Lưu User

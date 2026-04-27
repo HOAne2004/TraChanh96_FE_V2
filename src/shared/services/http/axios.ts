@@ -66,10 +66,14 @@ apiClient.interceptors.response.use(
     const toastStore = useToastStore();
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    // Nếu lỗi 401 và chưa thử refresh
+    // 1. Nếu lỗi 401 và chưa thử refresh
     if (error.response?.status === 401 && !originalRequest._retry) {
+      const skipUrls = ['/identity/auth/refresh-token', '/identity/users/me/logout'];
+      if (skipUrls.some(url => originalRequest.url?.includes(url))) {
+          return Promise.reject(error);
+      }
+
       if (isRefreshing) {
-        // Đang refresh, đợi kết quả
         return new Promise((resolve) => {
           addRefreshSubscriber((token: string) => {
             originalRequest.headers!.Authorization = `Bearer ${token}`;
@@ -85,29 +89,21 @@ apiClient.interceptors.response.use(
         const newAccessToken = await authStore.refreshAccessToken();
 
         if (newAccessToken) {
-          // Cập nhật token cho tất cả request đang chờ
           onRefreshed(newAccessToken);
-          // Thực hiện lại request gốc
           originalRequest.headers!.Authorization = `Bearer ${newAccessToken}`;
           return apiClient(originalRequest);
         } else {
-          // Refresh token thất bại, logout
-          toastStore.warning('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
-          authStore.logout();
-          authStore.openLoginModal();
+          // Bỏ qua toast warning ở đây vì trong store đã xử lý logout
           return Promise.reject(error);
         }
       } catch (refreshError) {
-        toastStore.warning('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
-        authStore.logout();
-        authStore.openLoginModal();
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
       }
     }
 
-    // Xử lý các lỗi khác
+    // Xử lý các lỗi khác (403, 500...)
     if (error.response) {
       const status = error.response.status;
       const errorData = error.response.data as ApiError;

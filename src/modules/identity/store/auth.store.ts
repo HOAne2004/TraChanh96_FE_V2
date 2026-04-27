@@ -5,6 +5,7 @@ import { ref, computed } from 'vue';
 import type { UserProfile } from '@/modules/identity/types/user';
 import { authService } from '../services/auth.service';
 import { userService } from '../services/user.service';
+import { useToastStore } from '@/shared/store/toast.store';
 
 export const useAuthStore = defineStore('auth', () => {
   // 1. State
@@ -59,13 +60,14 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       const response = await authService.refreshToken(currentRefreshToken);
-      // Cập nhật tokens mới
       setTokens(response.accessToken, response.refreshToken);
-      // Cập nhật user nếu cần (giữ nguyên thông tin cũ, không cần thay đổi)
       return response.accessToken;
     } catch (error) {
-      // Refresh token hết hạn hoặc không hợp lệ
+      const toastStore = useToastStore();
+      toastStore.warning('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+
       await logout();
+      openLoginModal();
       return null;
     }
   }
