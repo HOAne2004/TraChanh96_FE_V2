@@ -3,8 +3,8 @@ export interface GetCustomerStoresParams {
   pageIndex?: number;
   pageSize?: number;
   searchTerm?: string;
-  userLat?: number;
-  userLng?: number;
+  userLatitude?: number;
+  userLongitude?: number;
 }
 
 // 2. DTO Danh sách quán (Đã thêm openDate)
@@ -22,7 +22,7 @@ export interface StoreCustomerList {
 
 // 3. Các Type phụ trợ cho trang Chi tiết
 export interface OperatingHour {
-  dayOfWeek: number; // 0: Chủ nhật, 1: Thứ 2...
+  dayOfWeek: number | string; // 0: Chủ nhật, 1: Thứ 2... hoặc 'Sunday', 'Monday'...
   openTime: string;
   closeTime: string;
   isClosed: boolean;

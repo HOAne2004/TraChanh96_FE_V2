@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { StoreCustomerList } from '@/modules/stores/types/store';
+import { useStoreStore } from '@/modules/stores/stores/store.store';
 
 const props = defineProps<{
   stores: StoreCustomerList[];
@@ -11,6 +12,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string | null): void;
 }>();
+
+const storeStore = useStoreStore();
 
 // Two-way binding cho thẻ <select>
 const selectedStoreId = computed({
@@ -27,23 +30,46 @@ const activeStoreInfo = computed(() => {
 
 <template>
   <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
-    <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-        class="w-6 h-6 text-primary-500"
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-bold text-gray-800 flex items-center gap-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-6 h-6 text-primary-500"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"
+          />
+        </svg>
+        Chọn cửa hàng
+      </h3>
+
+      <button 
+        @click="storeStore.requestUserLocation()" 
+        :disabled="storeStore.isLocationLoading || disabled"
+        class="text-xs font-medium text-primary-600 flex items-center gap-1.5 hover:text-primary-700 disabled:opacity-50 disabled:cursor-not-allowed bg-primary-50 px-3 py-1.5 rounded-lg border border-primary-100 transition-colors"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"
-        />
-      </svg>
-      Chọn cửa hàng
-    </h3>
+        <svg v-if="storeStore.isLocationLoading" class="animate-spin h-3.5 w-3.5 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+        </svg>
+        <span class="hidden sm:inline">Tìm quán gần tôi</span>
+        <span class="sm:hidden">Gần tôi</span>
+      </button>
+    </div>
+
+    <p v-if="storeStore.locationError" class="text-xs text-red-500 mb-3 font-medium">
+      {{ storeStore.locationError }}
+    </p>
 
     <div class="relative">
       <select

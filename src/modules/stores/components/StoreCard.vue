@@ -45,12 +45,7 @@ const mapLink = computed(() => {
         </span>
       </div>
 
-      <div
-        v-if="store.distanceKm !== null"
-        class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-gray-800 text-xs font-bold px-2 py-1 rounded-md shadow-sm"
-      >
-        {{ store.distanceKm }} km
-      </div>
+
 
       <div class="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-4 pt-8">
         <div class="flex items-center text-white text-sm font-medium">
@@ -77,7 +72,18 @@ const mapLink = computed(() => {
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
           <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
         </svg>
-        <span class="line-clamp-2" :title="store.fullAddress">{{ store.fullAddress }}</span>
+        <div class="flex flex-col gap-1.5">
+          <span class="line-clamp-2" :title="store.fullAddress">{{ store.fullAddress }}</span>
+          <span
+            v-if="store.distanceKm !== null && store.distanceKm !== undefined"
+            class="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-bold px-2 py-0.5 rounded-md w-max border border-green-100"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h3.25a.75.75 0 00.75-.75v-3.25z" clip-rule="evenodd" />
+            </svg>
+            Cách bạn {{ store.distanceKm.toFixed(1) }} km
+          </span>
+        </div>
       </div>
     </div>
 

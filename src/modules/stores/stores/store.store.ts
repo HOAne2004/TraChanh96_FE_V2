@@ -21,12 +21,27 @@ export const useStoreStore = defineStore('storeStore', () => {
   const loading = ref(false);
   const error = ref<string | null>(null);
 
+  // --- LOCATION STATE ---
+  const userLat = ref<number | null>(null);
+  const userLng = ref<number | null>(null);
+  const isLocationLoading = ref(false);
+  const locationError = ref<string | null>(null);
+
   // --- ACTIONS ---
 
   // 1. Lấy danh sách hệ thống cửa hàng (Có tính khoảng cách, check giờ mở cửa)
   const fetchActiveStores = async (params: GetCustomerStoresParams = { pageIndex: 1, pageSize: 50 }) => {
     loading.value = true;
     error.value = null;
+
+    // Tự động gán tọa độ nếu đã có
+    if (params.userLatitude === undefined && userLat.value !== null) {
+      params.userLatitude = userLat.value;
+    }
+    if (params.userLongitude === undefined && userLng.value !== null) {
+      params.userLongitude = userLng.value;
+    }
+
     try {
       const data = await storeService.getCustomerStores(params);
       stores.value = data.items;
@@ -82,6 +97,58 @@ export const useStoreStore = defineStore('storeStore', () => {
     }
   };
 
+  // 5. Yêu cầu quyền vị trí và fetch lại cửa hàng
+  const requestUserLocation = () => {
+    isLocationLoading.value = true;
+    locationError.value = null;
+
+    if (!navigator.geolocation) {
+      locationError.value = 'Trình duyệt không hỗ trợ tính năng định vị.';
+      isLocationLoading.value = false;
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        userLat.value = position.coords.latitude;
+        userLng.value = position.coords.longitude;
+        isLocationLoading.value = false;
+        
+        // Gọi lại fetchActiveStores kèm theo tọa độ mới
+        fetchActiveStores({
+          pageIndex: 1,
+          pageSize: 50,
+          userLatitude: userLat.value,
+          userLongitude: userLng.value
+        });
+      },
+      (geoError) => {
+        isLocationLoading.value = false;
+        switch (geoError.code) {
+          case geoError.PERMISSION_DENIED:
+            locationError.value = 'Bạn đã từ chối cấp quyền truy cập vị trí.';
+            break;
+          case geoError.POSITION_UNAVAILABLE:
+            locationError.value = 'Không thể xác định vị trí hiện tại.';
+            break;
+          case geoError.TIMEOUT:
+            locationError.value = 'Hết thời gian yêu cầu vị trí.';
+            break;
+          default:
+            locationError.value = 'Đã xảy ra lỗi không xác định khi lấy vị trí.';
+            break;
+        }
+        // Fetch danh sách bình thường (không có tọa độ)
+        fetchActiveStores({ pageIndex: 1, pageSize: 50 });
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  };
+
   return {
     // State
     stores,
@@ -90,11 +157,16 @@ export const useStoreStore = defineStore('storeStore', () => {
     selectedStoreId,
     loading,
     error,
+    userLat,
+    userLng,
+    isLocationLoading,
+    locationError,
     
     // Actions
     fetchActiveStores,
     fetchStoreBySlug,
     setSelectedStore,
-    fetchTableQrInfo
+    fetchTableQrInfo,
+    requestUserLocation
   };
 });

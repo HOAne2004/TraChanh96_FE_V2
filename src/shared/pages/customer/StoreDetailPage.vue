@@ -65,9 +65,23 @@ const formatDate = (dateStr: string | null) => {
   return new Date(dateStr).toLocaleDateString('vi-VN');
 };
 
-const getDayName = (dayOfWeek: number) => {
+const getDayName = (dayOfWeek: number | string) => {
   const days = ['Chủ Nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
-  return days[dayOfWeek] || '';
+  
+  if (typeof dayOfWeek === 'number') {
+    return days[dayOfWeek] || '';
+  }
+
+  const map: Record<string, string> = {
+    'Sunday': 'Chủ Nhật',
+    'Monday': 'Thứ 2',
+    'Tuesday': 'Thứ 3',
+    'Wednesday': 'Thứ 4',
+    'Thursday': 'Thứ 5',
+    'Friday': 'Thứ 6',
+    'Saturday': 'Thứ 7'
+  };
+  return map[dayOfWeek] || dayOfWeek;
 };
 </script>
 
