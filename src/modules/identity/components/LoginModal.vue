@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {reactive, ref} from 'vue';
+import { reactive, ref } from 'vue';
 import { useAuthStore } from '@/modules/identity/store/auth.store';
 import { authService } from '@/modules/identity/services/auth.service';
 import type { ApiError } from '@/shared/types/api';
@@ -16,16 +16,15 @@ const form = reactive({
 const isLoading = ref(false);
 const errorMessage = ref('');
 
-const handleLogin = async() =>{
+const handleLogin = async () => {
   isLoading.value = true;
-  errorMessage.value ='';
+  errorMessage.value = '';
 
-  try{
-    // Dữ liệu lúc này đã được bóc tách sạch sẽ từ Service
+  try {
     const response = await authService.login(form);
 
-    // Lưu Token
-    authStore.setToken(response.accessToken);
+    // SỬA: Dùng setTokens thay vì setToken
+    authStore.setTokens(response.accessToken, response.refreshToken);
 
     // Lưu User
     authStore.setUser({
@@ -38,16 +37,13 @@ const handleLogin = async() =>{
 
     authStore.closeLoginModal();
     toastStore.success('Đăng nhập thành công!');
-  }
-  catch(error){
+  } catch (error) {
     const apiError = error as ApiError;
     errorMessage.value = apiError.message || 'Tài khoản hoặc mật khẩu không chính xác';
-  }
-  finally{
+  } finally {
     isLoading.value = false;
   }
 };
-
 </script>
 
 <template>

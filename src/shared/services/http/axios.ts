@@ -24,6 +24,19 @@ const apiClient: AxiosInstance = axios.create({
     }
 });
 
+// Flag để tránh gọi refresh nhiều lần
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+function onRefreshed(token: string) {
+  refreshSubscribers.forEach(cb => cb(token));
+  refreshSubscribers = [];
+}
+
+function addRefreshSubscriber(cb: (token: string) => void) {
+  refreshSubscribers.push(cb);
+}
+
 //Request interceptor
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) =>{
@@ -45,52 +58,77 @@ apiClient.interceptors.request.use(
 )
 
 apiClient.interceptors.response.use(
-    (response: AxiosResponse) => {
-    // 1. KHI THÀNH CÔNG (HTTP Status 200 - 299)
-    // Lột bỏ lớp vỏ Axios, chỉ trả về đúng cái 'data' bên trong
-    // (chính là object { data, message, status, success } từ .NET)
-        return response;
-    },
-    (error: AxiosError) => {
-    // 2. KHI THẤT BẠI (HTTP Status 4xx, 5xx)
+  (response: AxiosResponse) => {
+    return response;
+  },
+  async (error: AxiosError) => {
     const authStore = useAuthStore();
     const toastStore = useToastStore();
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    // Lấy thông tin lỗi từ .NET
-      if(error.response)
-      {
-        const status = error.response.status;
-        const errorData = error.response.data as ApiError;
-
-        // Xử lý tự động theo mã trạng thái (HTTP Status)
-        switch (status) {
-            case 401: // Chưa đăng nhập hoặc Token hết hạn
-                toastStore.warning('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
-                authStore.logout();
-                authStore.openLoginModal(); // Bật popup bắt đăng nhập lại
-                break;
-
-            case 403: // Không có quyền truy cập
-                toastStore.error('Bạn không có quyền truy cập vào chức năng này!');
-                break;
-
-            case 500: // Server Backend bị sập/lỗi code
-                toastStore.error('Hệ thống đang gặp sự cố, vui lòng thử lại sau.');
-                break;
-
-            // Các lỗi 400 (Bad Request), 404... ta không gọi Toast ở đây,
-            // mà trả về để các trang tự hiển thị thông báo riêng cho phù hợp.
-        }
-
-        console.error("Lỗi từ API:", errorData?.message || "Lỗi không xác định");
-
-        return Promise.reject(error);
+    // Nếu lỗi 401 và chưa thử refresh
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        // Đang refresh, đợi kết quả
+        return new Promise((resolve) => {
+          addRefreshSubscriber((token: string) => {
+            originalRequest.headers!.Authorization = `Bearer ${token}`;
+            resolve(apiClient(originalRequest));
+          });
+        });
       }
-      toastStore.error("Lỗi kết nối mạng hoặc server không phản hồi");
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const newAccessToken = await authStore.refreshAccessToken();
+
+        if (newAccessToken) {
+          // Cập nhật token cho tất cả request đang chờ
+          onRefreshed(newAccessToken);
+          // Thực hiện lại request gốc
+          originalRequest.headers!.Authorization = `Bearer ${newAccessToken}`;
+          return apiClient(originalRequest);
+        } else {
+          // Refresh token thất bại, logout
+          toastStore.warning('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+          authStore.logout();
+          authStore.openLoginModal();
+          return Promise.reject(error);
+        }
+      } catch (refreshError) {
+        toastStore.warning('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+        authStore.logout();
+        authStore.openLoginModal();
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    // Xử lý các lỗi khác
+    if (error.response) {
+      const status = error.response.status;
+      const errorData = error.response.data as ApiError;
+
+      switch (status) {
+        case 403:
+          toastStore.error('Bạn không có quyền truy cập vào chức năng này!');
+          break;
+        case 500:
+          toastStore.error('Hệ thống đang gặp sự cố, vui lòng thử lại sau.');
+          break;
+      }
+
+      console.error("Lỗi từ API:", errorData?.message || "Lỗi không xác định");
       return Promise.reject(error);
     }
-);
 
+    toastStore.error("Lỗi kết nối mạng hoặc server không phản hồi");
+    return Promise.reject(error);
+  }
+);
 
 //xuất nó ra để các file khác có thể import và sử dụng
 export default apiClient;

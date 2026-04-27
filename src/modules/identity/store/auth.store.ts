@@ -1,13 +1,15 @@
-import {defineStore} from 'pinia';
-import {ref, computed} from 'vue';
-import type { UserProfile } from '@/modules/identity/types/user';
+// modules/identity/stores/auth.store.ts
 
-//Khởi tạo kho tên là 'auth'
-export const useAuthStore = defineStore('auth', () =>{
-  //1. State (biến lưu dữ liệu)
-  // ref<T> là cách nói với TS: "Biến này là kiểu T"
-  const token = ref<string| null>(localStorage.getItem('accessToken'));
-  // Khôi phục user từ localStorage nếu có (để F5 không bị mất tên)
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
+import type { UserProfile } from '@/modules/identity/types/user';
+import { authService } from '../services/auth.service';
+import { userService } from '../services/user.service';
+
+export const useAuthStore = defineStore('auth', () => {
+  // 1. State
+  const token = ref<string | null>(localStorage.getItem('accessToken'));
+  const refreshToken = ref<string | null>(localStorage.getItem('refreshToken')); // THÊM MỚI
   const savedUser = localStorage.getItem('user');
   const user = ref<UserProfile | null>(savedUser ? JSON.parse(savedUser) : null);
 
@@ -15,43 +17,69 @@ export const useAuthStore = defineStore('auth', () =>{
   const isRegisterModalVisible = ref<boolean>(false);
   const isForgotPasswordModalVisible = ref<boolean>(false);
 
-  //2. Getters (dữ liệu tính toán tự động)
-  // Hàm này trả về true nếu token có giá trị, false nếu token là null
+  // 2. Getters
   const isAuthenticated = computed(() => !!token.value);
+  const isAdmin = computed(() => user.value?.role === 'Admin' || user.value?.role === 'Manager');
 
-  //Hàm này kiểm tra xem user có phải là Admin/Manager không
-  const isAdmin = computed(() => user.value?.role === 'Admin'|| user.value?.role == 'Manager');
-
-
-  //3. Actions (Hàm thay đổi State)
-  function setToken(newToken: string){
-    token.value = newToken;
-    localStorage.setItem('accessToken', newToken); //Lưu vào ổ cứng trình duyệt
+  // 3. Actions
+  function setTokens(accessToken: string, refreshTokenValue: string) {
+    token.value = accessToken;
+    refreshToken.value = refreshTokenValue;
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshTokenValue);
   }
 
-  //lưu thông tin user
-  function setUser(newUser: UserProfile){
+  function setUser(newUser: UserProfile) {
     user.value = newUser;
     localStorage.setItem('user', JSON.stringify(newUser));
   }
 
-  function logout(){
-    token.value = null;
-    user.value = null;
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
+  // SỬA LẠI: Gọi API logout ở BE
+  async function logout() {
+    try {
+      // Gọi API logout để xóa refresh token ở BE
+      await userService.logout();
+    } catch (error) {
+      console.error('Logout API error:', error);
+    } finally {
+      // Xóa toàn bộ dữ liệu ở FE
+      token.value = null;
+      refreshToken.value = null;
+      user.value = null;
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+    }
   }
 
-  function openLoginModal(){
+  // THÊM MỚI: Refresh token tự động
+  async function refreshAccessToken(): Promise<string | null> {
+    const currentRefreshToken = refreshToken.value;
+    if (!currentRefreshToken) return null;
+
+    try {
+      const response = await authService.refreshToken(currentRefreshToken);
+      // Cập nhật tokens mới
+      setTokens(response.accessToken, response.refreshToken);
+      // Cập nhật user nếu cần (giữ nguyên thông tin cũ, không cần thay đổi)
+      return response.accessToken;
+    } catch (error) {
+      // Refresh token hết hạn hoặc không hợp lệ
+      await logout();
+      return null;
+    }
+  }
+
+  function openLoginModal() {
     isLoginModalVisible.value = true;
   }
 
-  function closeLoginModal(){
+  function closeLoginModal() {
     isLoginModalVisible.value = false;
   }
 
   function openRegisterModal() {
-    isLoginModalVisible.value = false; // Tự động đóng modal đăng nhập nếu đang mở
+    isLoginModalVisible.value = false;
     isRegisterModalVisible.value = true;
   }
 
@@ -60,7 +88,7 @@ export const useAuthStore = defineStore('auth', () =>{
   }
 
   function openForgotPasswordModal() {
-    isLoginModalVisible.value = false; // Đóng modal login nếu đang mở
+    isLoginModalVisible.value = false;
     isForgotPasswordModalVisible.value = true;
   }
 
@@ -68,18 +96,19 @@ export const useAuthStore = defineStore('auth', () =>{
     isForgotPasswordModalVisible.value = false;
   }
 
-  //Trả ra ngoài để các file khác dùng được
-  return{
+  return {
     token,
+    refreshToken,
     user,
     isAuthenticated,
     isAdmin,
     isLoginModalVisible,
     isRegisterModalVisible,
     isForgotPasswordModalVisible,
-    setToken,
+    setTokens,
     setUser,
     logout,
+    refreshAccessToken,
     openLoginModal,
     closeLoginModal,
     openRegisterModal,

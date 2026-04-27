@@ -31,5 +31,11 @@ export const authService = {
     return apiClient
       .post<ApiResponse<null>>('/identity/auth/reset-password', data)
       .then((res) => res.data.message || 'Khôi phục mật khẩu thành công');
+  },
+
+  refreshToken(refreshToken: string): Promise<AuthResponse> {
+    return apiClient
+      .post<ApiResponse<AuthResponse>>('/identity/auth/refresh-token', { refreshToken })
+      .then((res) => res.data.data);
   }
 }

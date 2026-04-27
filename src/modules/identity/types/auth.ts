@@ -16,12 +16,15 @@ export interface VerifyEmailPayload{
   token: string;
 }
 
-export interface AuthResponse{
+export interface AuthResponse {
   accessToken: string;
+  refreshToken: string;
+  accessTokenExpiry: string;
+  refreshTokenExpiry: string;
   userId: string;
   fullName: string;
   role: string;
-  thumbnailUrl?: string;
+  thumbnailUrl?: string;       
 }
 
 export interface ForgotPasswordPayload {
