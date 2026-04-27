@@ -5,6 +5,7 @@ import type { StoreCustomerList } from '@/modules/stores/types/store';
 const props = defineProps<{
   stores: StoreCustomerList[];
   modelValue: string | null;
+  disabled?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -47,7 +48,11 @@ const activeStoreInfo = computed(() => {
     <div class="relative">
       <select
         v-model="selectedStoreId"
-        class="w-full appearance-none bg-gray-50 border border-gray-300 text-gray-900 rounded-lg px-4 py-2.5 pr-8 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition cursor-pointer text-sm truncate"
+        :disabled="disabled"
+        :class="[
+          'w-full appearance-none border text-gray-900 rounded-lg px-4 py-2.5 pr-8 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition text-sm truncate',
+          disabled ? 'opacity-70 cursor-not-allowed bg-gray-200 border-gray-200' : 'bg-gray-50 border-gray-300 cursor-pointer'
+        ]"
       >
         <option :value="null" disabled>Hãy chọn cửa hàng gần bạn</option>
 

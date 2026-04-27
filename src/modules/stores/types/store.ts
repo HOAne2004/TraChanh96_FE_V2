@@ -17,7 +17,7 @@ export interface StoreCustomerList {
   distanceKm: number | null;
   isOpenNow: boolean;
   closingTimeToday: string | null;
-  openDate: string | null; 
+  openDate: string | null;
 }
 
 // 3. Các Type phụ trợ cho trang Chi tiết
@@ -50,7 +50,7 @@ export interface StoreCustomerDetail {
   phoneNumber: string | null;
   wifiPassword: string | null;
   description: string | null;
-  imageUrl: string | null;
+  imageUrl?: string;
   isOpenNow: boolean;
   openTimeToday: string | null;
   closingTimeToday: string | null;
