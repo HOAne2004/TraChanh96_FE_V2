@@ -5,7 +5,6 @@ import { ref, computed } from 'vue';
 import type { UserProfile } from '@/modules/identity/types/user';
 import { authService } from '../services/auth.service';
 import { userService } from '../services/user.service';
-import { useToastStore } from '@/shared/store/toast.store';
 
 export const useAuthStore = defineStore('auth', () => {
   // 1. State
@@ -35,43 +34,63 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('user', JSON.stringify(newUser));
   }
 
-  // SỬA LẠI: Gọi API logout ở BE
+  function clearAuthData() {
+    token.value = null;
+    refreshToken.value = null;
+    user.value = null;
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+  }
+
   async function logout() {
     try {
-      // Gọi API logout để xóa refresh token ở BE
-      await userService.logout();
+      if (user.value?.publicId) {
+        await userService.logout(user.value.publicId);
+      }
     } catch (error) {
-      console.error('Logout API error:', error);
+      console.warn('Logout API failed, but clearing local state anyway:', error);
     } finally {
-      // Xóa toàn bộ dữ liệu ở FE
-      token.value = null;
-      refreshToken.value = null;
-      user.value = null;
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
+      clearAuthData();
     }
   }
 
-  // THÊM MỚI: Refresh token tự động
   async function refreshAccessToken(): Promise<string | null> {
     const currentRefreshToken = refreshToken.value;
-    if (!currentRefreshToken) return null;
+
+    if (!currentRefreshToken) {
+        clearAuthData();
+        return null;
+    }
 
     try {
+      // Gọi API refresh token (nhớ đảm bảo authService có hàm này)
       const response = await authService.refreshToken(currentRefreshToken);
+
+      // Update tokens mới vào Store & LocalStorage
       setTokens(response.accessToken, response.refreshToken);
+
+      // Optional: Cập nhật lại user nếu Backend trả về thông tin user mới
+      if (response.userId) {
+          setUser({
+              publicId: response.userId,
+              email: response.email,
+              fullName: response.fullName,
+              role: response.role,
+              // phone, thumbnailUrl... (tùy backend trả về)
+          } as UserProfile);
+      }
+
       return response.accessToken;
     } catch (error) {
-      const toastStore = useToastStore();
-      toastStore.warning('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
-
-      await logout();
-      openLoginModal();
-      return null;
+      // NẾU LỖI: Trả thẳng lỗi ra ngoài để file axios.ts bắt và xử lý redirect/toast
+      // (Không gọi toast hay openLoginModal ở đây để tách bạch logic UI khỏi Store)
+      clearAuthData();
+      throw error;
     }
   }
 
+  // --- Quản lý Modal ---
   function openLoginModal() {
     isLoginModalVisible.value = true;
   }
@@ -109,6 +128,7 @@ export const useAuthStore = defineStore('auth', () => {
     isForgotPasswordModalVisible,
     setTokens,
     setUser,
+    clearAuthData,
     logout,
     refreshAccessToken,
     openLoginModal,

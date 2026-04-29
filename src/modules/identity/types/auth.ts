@@ -22,9 +22,10 @@ export interface AuthResponse {
   accessTokenExpiry: string;
   refreshTokenExpiry: string;
   userId: string;
+  email: string;
   fullName: string;
   role: string;
-  thumbnailUrl?: string;       
+  thumbnailUrl?: string;
 }
 
 export interface ForgotPasswordPayload {

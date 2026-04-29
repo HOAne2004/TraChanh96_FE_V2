@@ -6,6 +6,9 @@ import axios, {type AxiosInstance, type AxiosResponse, type AxiosError, type Int
 import { useAuthStore } from "@/modules/identity/store/auth.store";
 import { useToastStore } from "@/shared/store/toast.store";
 import type { ApiError } from "@/shared/types/api";
+import router from "@/router";
+
+//import {getMockData} from "@/modules/catalog/services/catalog.mock";
 
 const apiClient: AxiosInstance = axios.create({
   /* bổ sung vào tsconfig.app.json nếu báo đỏ
@@ -66,7 +69,30 @@ apiClient.interceptors.response.use(
     const toastStore = useToastStore();
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    // 1. Nếu lỗi 401 và chưa thử refresh
+    // // 1.Kiểm tra nếu: Không có response (mất mạng) HOẶC lỗi server (5xx) HOẶC timeout
+    // const isNetworkError = !error.response;
+    // const isServerError = error.response && error.response.status >= 500;
+    // const isTimeout = error.code === 'ECONNABORTED';
+    // const is401 = error.response?.status === 401;
+
+    // if (isNetworkError || isServerError || isTimeout || is401) {
+    //     // Lấy dữ liệu mock dựa trên URL request
+    //     const mockData = getMockData(originalRequest.url || "");
+
+    //     if (mockData) {
+    //         console.warn(`[Mock Mode] Sử dụng dữ liệu thay thế cho: ${originalRequest.url}`);
+
+    //         // Trả về RESOLVE để Frontend tiếp tục chạy
+    //         return Promise.resolve({
+    //             data: mockData,
+    //             status: 200,
+    //             statusText: 'OK (Mocked)',
+    //             headers: {},
+    //             config: originalRequest,
+    //         });
+    //     }
+    // }
+    // 2. Nếu lỗi 401 và chưa thử refresh
     if (error.response?.status === 401 && !originalRequest._retry) {
       const skipUrls = ['/identity/auth/refresh-token', '/identity/users/me/logout'];
       if (skipUrls.some(url => originalRequest.url?.includes(url))) {
@@ -89,14 +115,24 @@ apiClient.interceptors.response.use(
         const newAccessToken = await authStore.refreshAccessToken();
 
         if (newAccessToken) {
+          // Thành công: Thông báo cho các request đang đợi và chạy lại request hiện tại
           onRefreshed(newAccessToken);
           originalRequest.headers!.Authorization = `Bearer ${newAccessToken}`;
           return apiClient(originalRequest);
         } else {
-          // Bỏ qua toast warning ở đây vì trong store đã xử lý logout
-          return Promise.reject(error);
+          // Thất bại: Ném lỗi xuống catch
+          throw new Error("Refresh token expired or invalid");
         }
       } catch (refreshError) {
+        // Gọi hàm logout ở Store để dọn dẹp sạch sẽ (Hàm này bạn đã viết trong auth.store.ts)
+        authStore.logout();
+
+        // Thông báo 1 lần duy nhất
+        toastStore.warning("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+
+        // Bật Modal Đăng nhập thay vì dùng Router chuyển trang
+        authStore.openLoginModal();
+
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -112,6 +148,7 @@ apiClient.interceptors.response.use(
         case 403:
           toastStore.error('Bạn không có quyền truy cập vào chức năng này!');
           break;
+        case 400:
         case 500:
           toastStore.error('Hệ thống đang gặp sự cố, vui lòng thử lại sau.');
           break;

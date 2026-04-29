@@ -50,9 +50,9 @@
       .put<ApiResponse<null>>('/identity/users/me/lock')
       .then((res) => res.data.message || '');
     },
-    
+
     // Đăng xuất
-    logout(): Promise<string> {
+    logout(publicId: string): Promise<string> {
     return apiClient
       .post<ApiResponse<null>>('/identity/users/me/logout')
       .then((res) => res.data.message || 'Đăng xuất thành công');
