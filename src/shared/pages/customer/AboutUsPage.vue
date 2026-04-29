@@ -57,7 +57,7 @@ const handleSelectStore = (slug: string) => {
     <AboutUsTimeline :stores="customerStore.stores" />
 
     <section class="max-w-6xl mx-auto text-center my-16 px-4">
-      <div class="inline-block p-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-3xl shadow-xl text-white transform hover:-translate-y-1 transition-transform duration-300 min-w-[300px]">
+      <div class="inline-block p-8 bg-linear-to-br from-primary-500 to-primary-700 rounded-3xl shadow-xl text-white transform hover:-translate-y-1 transition-transform duration-300 min-w-[300px]">
         <h2 class="text-6xl font-extrabold mb-2 drop-shadow-md">{{ totalAvailable || '...' }}</h2>
         <p class="text-xl font-medium opacity-90">Chi nhánh trên toàn quốc</p>
         <p class="text-sm mt-2 opacity-75">Sẵn sàng phục vụ bạn mỗi ngày</p>

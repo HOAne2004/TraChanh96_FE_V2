@@ -4,7 +4,7 @@ import HomePage from '@/shared/pages/customer/HomePage.vue'
 import { identityRoutes } from '@/modules/identity/router';
 import { catalogRoutes } from '@/modules/catalog/router';
 import { storeRoutes } from '@/modules/stores/router';
-
+import { orderRoutes } from '@/modules/orders/router';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -20,6 +20,7 @@ const router = createRouter({
         ...identityRoutes,
         ...catalogRoutes,
         ...storeRoutes,
+        ...orderRoutes,
       ]
     }
   ],

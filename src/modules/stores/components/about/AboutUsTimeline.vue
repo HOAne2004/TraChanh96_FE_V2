@@ -54,13 +54,15 @@ const milestones = computed<Milestone[]>(() => {
         new Date(a.openDate!).getTime() - new Date(b.openDate!).getTime()
       )[0];
 
-      const dateObj = new Date(oldestStore.openDate!);
-      results.push({
-        title: `Có mặt tại ${city}`,
-        date: `Tháng ${dateObj.getMonth() + 1}, ${dateObj.getFullYear()}`,
-        imageUrl: oldestStore.imageUrl,
-        rawDate: oldestStore.openDate!
-      });
+      if (oldestStore) {
+        const dateObj = new Date(oldestStore.openDate!);
+        results.push({
+          title: `Có mặt tại ${city}`,
+          date: `Tháng ${dateObj.getMonth() + 1}, ${dateObj.getFullYear()}`,
+          imageUrl: oldestStore.imageUrl,
+          rawDate: oldestStore.openDate!
+        });
+      }
     }
   });
 
