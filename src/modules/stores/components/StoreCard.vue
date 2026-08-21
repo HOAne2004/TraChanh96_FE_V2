@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import IconSvgLocation from '@/assets/icons/IconSvgLocation.svg'
 import { computed } from 'vue';
 import type { StoreCustomerList } from '../types/store';
 import defaultStoreImg from '@/assets/images/default-store.png';
@@ -49,9 +50,7 @@ const mapLink = computed(() => {
 
       <div class="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-4 pt-8">
         <div class="flex items-center text-white text-sm font-medium">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+          <IconSvgLocation class="w-4 h-4 mr-1" />
           <span v-if="store.isOpenNow && store.closingTimeToday">
             Đóng cửa lúc {{ store.closingTimeToday }}
           </span>
@@ -68,19 +67,14 @@ const mapLink = computed(() => {
       </h4>
 
       <div class="flex items-start gap-2 text-gray-600 text-sm flex-1">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 shrink-0 mt-0.5 text-primary-500">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-        </svg>
+        <IconSvgLocation class="w-5 h-5 shrink-0 mt-0.5 text-primary-500" />
         <div class="flex flex-col gap-1.5">
           <span class="line-clamp-2" :title="store.fullAddress">{{ store.fullAddress }}</span>
           <span
             v-if="store.distanceKm !== null && store.distanceKm !== undefined"
             class="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-bold px-2 py-0.5 rounded-md w-max border border-green-100"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h3.25a.75.75 0 00.75-.75v-3.25z" clip-rule="evenodd" />
-            </svg>
+            <IconSvgLocation class="w-3 h-3" />
             Cách bạn {{ store.distanceKm.toFixed(1) }} km
           </span>
         </div>

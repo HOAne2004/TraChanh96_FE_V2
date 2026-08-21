@@ -1,72 +1,70 @@
 <script setup lang="ts">
 import IconSvgCup from '@/assets/icons/IconSvgCup.svg'
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
-import ProductCard from '@/modules/catalog/components/ProductCard.vue'
-import SectionWrapper from '@/shared/components/ui/SectionWrapper.vue'
-import StoreFilter from '@/modules/stores/components/StoreFilter.vue'
-import ProductFilter from '@/modules/catalog/components/ProductFilter.vue'
+import ProductCard from '@/modules/catalog/components/ProductCard.vue';
+import SectionWrapper from '@/shared/components/ui/SectionWrapper.vue';
+import StoreFilter from '@/modules/stores/components/StoreFilter.vue';
+import ProductFilter from '@/modules/catalog/components/ProductFilter.vue';
 
-import { useStoreStore } from '@/modules/stores/stores/store.store'
-import type { CustomerProductCard } from '@/modules/catalog/types/product'
-import type { Category } from '@/modules/catalog/types/category'
-import AppLoading from '@/shared/components/ui/AppLoading.vue'
+import { useStoreStore } from '@/modules/stores/stores/store.store';
+import type { CustomerProductCard } from '@/modules/catalog/types/product';
+import type { Category } from '@/modules/catalog/types/category';
+import AppLoading from '@/shared/components/ui/AppLoading.vue';
 
 interface Props {
-  categories: Category[]
-  products: CustomerProductCard[]
-  isLoading: boolean
-  disableStoreFilter?: boolean
+  categories: Category[];
+  products: CustomerProductCard[];
+  isLoading: boolean;
+  disableStoreFilter?: boolean;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  (e: 'quick-add', product: CustomerProductCard): void
-}>()
+  (e: 'quick-add', product: CustomerProductCard): void;
+}>();
 
-const storeStore = useStoreStore()
+const storeStore = useStoreStore();
 
-const selectedCategoryIds = ref<number[]>([])
-const currentSearchTerm = ref('')
+const selectedCategoryIds = ref<number[]>([]);
+const currentSearchTerm = ref('');
 
 const activeCategories = computed(() => {
   // Chỉ hiện những danh mục có chứa sản phẩm
-  const availableCatIds = new Set(props.products.map((p) => p.categoryId))
-  return props.categories.filter((c) => availableCatIds.has(c.id))
-})
+  const availableCatIds = new Set(props.products.map(p => p.categoryId));
+  return props.categories.filter(c => availableCatIds.has(c.id));
+});
 
 const displayedSections = computed(() => {
-  let cats = props.categories
+  let cats = props.categories;
 
   if (selectedCategoryIds.value.length > 0) {
-    cats = cats.filter((c) => selectedCategoryIds.value.includes(c.id))
+    cats = cats.filter(c => selectedCategoryIds.value.includes(c.id));
   }
 
-  const searchTerm = currentSearchTerm.value.toLowerCase().trim()
+  const searchTerm = currentSearchTerm.value.toLowerCase().trim();
 
-  const grouped = cats.map((cat) => {
-    let catProducts = props.products.filter((p) => p.categoryId === cat.id)
+  const grouped = cats.map(cat => {
+    let catProducts = props.products.filter(p => p.categoryId === cat.id);
     if (searchTerm) {
-      catProducts = catProducts.filter((p) => p.name.toLowerCase().includes(searchTerm))
+      catProducts = catProducts.filter(p => p.name.toLowerCase().includes(searchTerm));
     }
     return {
       id: cat.id,
       name: cat.name,
-      products: catProducts,
-    }
-  })
+      products: catProducts
+    };
+  });
 
-  return grouped.filter((group) => group.products.length > 0)
-})
+  return grouped.filter(group => group.products.length > 0);
+});
 </script>
 
 <template>
   <div id="menu-section" class="mt-12">
-    <h2
-      class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 flex items-center gap-3"
-      v-if="disableStoreFilter"
-    >
+    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 flex items-center gap-3"
+    v-if="disableStoreFilter">
       <span class="p-2 bg-primary-100 rounded-xl text-primary-600">
         <IconSvgCup class="w-6 h-6" />
       </span>
@@ -90,19 +88,9 @@ const displayedSections = computed(() => {
       <div class="md:col-span-3">
         <AppLoading v-if="isLoading" :show="true" text="Đang tải danh sách..." />
 
-        <div
-          v-else-if="displayedSections.length === 0"
-          class="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-300 shadow-sm"
-        >
+        <div v-else-if="displayedSections.length === 0" class="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-300 shadow-sm">
           <p class="text-gray-500 text-lg">Không tìm thấy sản phẩm nào phù hợp.</p>
-          <button
-            v-if="selectedCategoryIds.length > 0 || currentSearchTerm"
-            @click="
-              selectedCategoryIds = []
-              currentSearchTerm = ''
-            "
-            class="text-primary-600 font-bold mt-2 hover:underline"
-          >
+          <button v-if="selectedCategoryIds.length > 0 || currentSearchTerm" @click="selectedCategoryIds = []; currentSearchTerm = ''" class="text-primary-600 font-bold mt-2 hover:underline">
             Xóa bộ lọc
           </button>
         </div>

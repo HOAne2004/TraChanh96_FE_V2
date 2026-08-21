@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import IconSvgLockDark from '@/assets/icons/IconSvgLockDark.svg'
+import IconSvgCamera from '@/assets/icons/IconSvgCamera.svg'
 import { ref, onMounted } from 'vue';
 import SectionWrapper from '@/shared/components/ui/SectionWrapper.vue';
 import { addressService } from '../services/address.service';
@@ -6,6 +8,7 @@ import type { AddressDto } from '../types/address';
 import { useToastStore } from '@/shared/store/toast.store';
 import { useConfirmStore } from '@/shared/store/confirm.store';
 import AddressModal from './AddressModal.vue';
+import AppLoading from '@/shared/components/ui/AppLoading.vue';
 
 const toastStore = useToastStore();
 const confirmStore = useConfirmStore();
@@ -59,7 +62,7 @@ const formatLocalPhone = (phone?: string) => {
   return phone;
 };
 // Hàm xóa địa chỉ
-const handleDelete = async (id: number) => {
+const handleDelete = async (id: string) => {
   const confirm = await confirmStore.ask({
     title: 'Xóa địa chỉ',
     message: 'Bạn có chắc chắn muốn xóa địa chỉ này khỏi sổ địa chỉ không?',
@@ -89,15 +92,13 @@ const handleDelete = async (id: number) => {
         class="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-lg transition shadow-sm whitespace-nowrap"
         :class="addresses?.length >= 5 ? 'opacity-50 cursor-not-allowed active:scale-100' : 'hover:bg-primary-700 active:scale-95'"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+        <IconSvgCamera class="w-4 h-4" />
         <span class="hidden sm:inline">Thêm địa chỉ mới</span>
         <span class="sm:hidden">Thêm</span>
       </button>
     </div>
 
-    <div v-if="isLoading" class="flex justify-center py-10">
-      <div class="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
-    </div>
+    <AppLoading v-if="isLoading" :show="true" text="Đang tải danh sách địa chỉ..." />
 
     <div v-else-if="addresses?.length > 0" class="space-y-4">
       <div
@@ -134,7 +135,7 @@ const handleDelete = async (id: number) => {
 
     <div v-else class="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
       <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-400"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
+        <IconSvgLockDark class="w-8 h-8 text-gray-400" />
       </div>
       <p class="text-gray-500 mb-4 font-medium">Bạn chưa thiết lập địa chỉ nào.</p>
     </div>

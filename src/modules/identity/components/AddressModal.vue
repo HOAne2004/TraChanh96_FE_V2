@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import IconSvgLogout from '@/assets/icons/IconSvgLogout.svg'
+import IconSvgBagShopping from '@/assets/icons/IconSvgBagShopping.svg'
 import { ref, watch, onMounted, nextTick } from 'vue';
 import axios from 'axios';
 import { useToastStore } from '@/shared/store/toast.store';
 import { addressService } from '../services/address.service';
 import type { AddressFormRequest, AddressDto } from '../types/address';
+import AppLoading from '@/shared/components/ui/AppLoading.vue';
 
 const props = defineProps<{
   isOpen: boolean;
@@ -275,13 +278,14 @@ watch(() => props.isOpen, async (open) => {
     <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" @click="closeModal"></div>
 
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden relative z-10 flex flex-col max-h-[90vh] animate-[fadeIn_0.2s_ease-out]">
+      <AppLoading :show="isLoading || isLocating" overlay :text="isLocating ? 'Đang định vị...' : 'Đang xử lý...'" />
 
       <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 shrink-0">
         <h3 class="text-lg font-bold text-gray-900">
           {{ isEdit ? 'Cập nhật địa chỉ' : 'Thêm địa chỉ mới' }}
         </h3>
         <button @click="closeModal" class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors outline-none">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+          <IconSvgBagShopping class="h-5 w-5" />
         </button>
       </div>
 
@@ -303,7 +307,7 @@ watch(() => props.isOpen, async (open) => {
         <div class="flex items-center justify-between p-3 bg-blue-50/50 border border-blue-100 rounded-xl">
           <div class="flex items-center gap-3">
              <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                <IconSvgLogout class="h-4 w-4" />
              </div>
              <div>
                 <p class="text-sm font-semibold text-gray-800">Sử dụng vị trí hiện tại</p>
@@ -311,7 +315,6 @@ watch(() => props.isOpen, async (open) => {
              </div>
           </div>
           <button @click.prevent="getCurrentLocation" :disabled="isLocating" class="px-4 py-2 bg-white border border-gray-300 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors shadow-sm flex items-center gap-2">
-            <span v-if="isLocating" class="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
             Định vị
           </button>
         </div>
@@ -354,7 +357,6 @@ watch(() => props.isOpen, async (open) => {
           Hủy bỏ
         </button>
         <button @click="handleSubmit" :disabled="isLoading" class="px-5 py-2.5 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors shadow-sm disabled:opacity-70 flex items-center gap-2">
-          <span v-if="isLoading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
           {{ isEdit ? 'Lưu thay đổi' : 'Hoàn tất thêm mới' }}
         </button>
       </div>

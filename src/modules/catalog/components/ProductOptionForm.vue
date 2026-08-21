@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import IconSvgAdd from '@/assets/icons/IconSvgAdd.svg'
+import IconSvgCheck from '@/assets/icons/IconSvgCheck.svg'
 import { ref, computed, watch } from 'vue';
 import type { ModalProductOption, ProductSize, SelectedTopping, OptionChangePayload, ProductTopping } from '@/modules/catalog/types/product';
 
@@ -183,9 +185,7 @@ watch(() => props.product, (newVal) => {
           <span class="text-lg font-extrabold mb-1">{{ size.size }}</span>
 
           <div v-if="selectedSize?.size === size.size" class="absolute -top-2 -right-2 bg-primary-500 text-white rounded-full p-0.5 shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-            </svg>
+            <IconSvgCheck class="h-3.5 w-3.5" />
           </div>
         </button>
       </div>
@@ -252,9 +252,7 @@ watch(() => props.product, (newVal) => {
                 class="w-5 h-5 rounded border flex shrink-0 items-center justify-center transition-colors"
                 :class="isToppingSelected(topping.toppingId) ? 'bg-primary-500 border-primary-500' : 'border-gray-300'"
               >
-                <svg v-if="isToppingSelected(topping.toppingId)" class="w-3.5 h-3.5 text-white" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
+                <IconSvgAdd v-if="isToppingSelected(topping.toppingId)" class="w-3.5 h-3.5 text-white" />
               </div>
               <div>
                 <p class="font-medium text-gray-800 text-sm">Topping #{{ topping.toppingId }}</p>

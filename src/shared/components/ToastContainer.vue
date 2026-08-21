@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import IconSvgCancel from '@/assets/icons/IconSvgCancel.svg'
 import { useToastStore } from '@/shared/store/toast.store';
 
 const toastStore = useToastStore();
@@ -17,7 +18,7 @@ const getTypeClass = (type: string) => {
 <template>
   <Teleport to="body">
 
-    <div class="fixed top-20 right-4 z-\[99999\] flex flex-col gap-3 w-80 pointer-events-none">
+    <div class="fixed top-20 right-4 z-[99999] flex flex-col gap-3 w-80 pointer-events-none">
 
       <TransitionGroup name="toast">
         <div
@@ -29,9 +30,7 @@ const getTypeClass = (type: string) => {
           <span class="text-sm font-medium">{{ toast.message }}</span>
 
           <button @click="toastStore.removeToast(toast.id)" class="ml-4 hover:opacity-75 focus:outline-none">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
+            <IconSvgCancel class="w-4 h-4" />
           </button>
         </div>
       </TransitionGroup>
