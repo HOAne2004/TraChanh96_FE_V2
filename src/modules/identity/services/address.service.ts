@@ -13,7 +13,7 @@ export const addressService = {
   },
 
   // 2. Lấy chi tiết 1 địa chỉ (dùng khi click nút Sửa)
-  getAddressById(id: number): Promise<AddressDto> {
+  getAddressById(id: string): Promise<AddressDto> {
     return apiClient
       .get<ApiResponse<AddressDto>>(`${BASE_URL}/${id}`)
       .then((res) => res.data.data);
@@ -27,7 +27,7 @@ export const addressService = {
   },
 
   // 4. Cập nhật địa chỉ
-  updateAddress(id: number, data: AddressFormRequest): Promise<string> {
+  updateAddress(id: string, data: AddressFormRequest): Promise<string> {
     const payload = {
       ...data,
       addressId: id
@@ -38,9 +38,15 @@ export const addressService = {
   },
 
   // 5. Xóa địa chỉ
-  deleteAddress(id: number): Promise<string> {
+  deleteAddress(id: string): Promise<string> {
     return apiClient
       .delete<ApiResponse<null>>(`${BASE_URL}/${id}`)
       .then((res) => res.data.message || 'Đã xóa địa chỉ');
+  },
+  // 6. Đặt làm địa chỉ mặc định
+  setDefaultAddress(id: string): Promise<string> {
+    return apiClient
+      .patch<ApiResponse<null>>(`${BASE_URL}/${id}/default`)
+      .then((res) => res.data.message || 'Đã đặt làm mặc định');
   }
 };

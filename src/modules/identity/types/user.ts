@@ -1,31 +1,37 @@
-export interface UserProfile{
-  publicId: string;
+export interface UserProfileResponse {
+  id: string;
   email: string;
   fullName: string;
-  role: string;
-  phone?: string;
-  thumbnailUrl?: string;
+  roles: string[];
+  phone?: string | null;
+  thumbnailUrl?: string | null;
+  emailVerified: boolean;
 }
 
-// Payload cho API Cập nhật thông tin
 export interface UpdateProfilePayload {
   fullName: string;
-  phoneNumber?: string;
-  thumbnailUrl?: string;
+  phoneNumber?: string | null;
+  thumbnailUrl?: string | null;
 }
 
-// Payload cho API Đổi mật khẩu
 export interface ChangePasswordPayload {
   currentPassword: string;
   newPassword: string;
 }
 
-// Payload cho API Đổi Email
 export interface ChangeEmailPayload {
   newEmail: string;
 }
 
-// Payload cho API Xác thực đổi Email (bước 2)
 export interface VerifyChangedEmailPayload {
   otpToken: string;
+}
+
+export interface ActiveSessionDto {
+  sessionId: string;
+  deviceName: string;
+  ipAddress: string;
+  expiryDate: string;
+  createdAt: string;
+  isCurrentSession: boolean;
 }

@@ -1,5 +1,5 @@
 export interface AddressDto {
-  id: number;
+  id: string;
   recipientName: string;
   phone: string;
   fullAddress: string;
@@ -23,3 +23,4 @@ export interface AddressFormRequest {
   longitude?: number | null;
   isDefault: boolean;
 }
+
