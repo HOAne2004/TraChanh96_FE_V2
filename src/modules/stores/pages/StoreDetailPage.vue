@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import IconSvgCalender from '@/assets/icons/IconSvgCalender.svg'
+import IconSvgCheck from '@/assets/icons/IconSvgCheck.svg'
+import IconSvgClock from '@/assets/icons/IconSvgClock.svg'
+import IconSvgLocation from '@/assets/icons/IconSvgLocation.svg'
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import defaultStoreImg from '@/assets/images/default-store.png';
@@ -11,6 +15,7 @@ import { useCategoryStore } from '@/modules/catalog/store/category.store';
 import CatalogMenuSection from '@/modules/catalog/components/CatalogMenuSection.vue';
 import QuickAddModal from '@/modules/catalog/components/QuickAddModal.vue';
 import type { CustomerProductCard } from '@/modules/catalog/types/product';
+import AppLoading from '@/shared/components/ui/AppLoading.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -88,9 +93,7 @@ const getDayName = (dayOfWeek: number | string) => {
 <template>
   <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 min-h-screen">
 
-    <div v-if="isLoadingLocal" class="flex justify-center py-20">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600"></div>
-    </div>
+    <AppLoading v-if="isLoadingLocal" :show="true" text="Đang tải thông tin cửa hàng..." />
 
     <div v-else-if="!currentStore" class="text-center py-32">
       <h1 class="text-2xl font-bold text-gray-800 mb-2">Không tìm thấy cửa hàng</h1>
@@ -130,9 +133,7 @@ const getDayName = (dayOfWeek: number | string) => {
               {{ currentStore.name }}
             </h1>
             <p class="text-sm text-gray-200 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-primary-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-              </svg>
+              <IconSvgLocation class="w-4 h-4 text-primary-400" />
               {{ currentStore.fullAddress }}
             </p>
           </div>
@@ -173,9 +174,7 @@ const getDayName = (dayOfWeek: number | string) => {
 
             <div class="bg-primary-50 p-5 rounded-2xl border border-primary-100">
               <h3 class="font-bold text-lg mb-3 text-primary-800 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <IconSvgClock class="w-5 h-5" />
                 Giờ hoạt động
               </h3>
 
@@ -204,9 +203,7 @@ const getDayName = (dayOfWeek: number | string) => {
               <h3 class="font-bold text-lg mb-4 text-gray-900 border-b pb-2">Tiện ích</h3>
               <ul class="space-y-3 text-sm text-gray-700">
                 <li class="flex items-start gap-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary-500 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                  </svg>
+                  <IconSvgCheck class="w-5 h-5 text-primary-500 shrink-0" />
                   <span>Wifi miễn phí <br />
                     <span v-if="currentStore.wifiPassword" class="text-xs text-gray-500 font-mono bg-gray-200 px-1.5 py-0.5 rounded mt-1 inline-block">
                       Pass: {{ currentStore.wifiPassword }}
@@ -215,9 +212,7 @@ const getDayName = (dayOfWeek: number | string) => {
                 </li>
 
                 <li v-if="currentStore.openDate" class="flex items-center gap-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary-500 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                    <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clip-rule="evenodd" />
-                  </svg>
+                  <IconSvgCalender class="w-5 h-5 text-primary-500 shrink-0" />
                   Hoạt động từ: <span class="font-semibold">{{ formatDate(currentStore.openDate) }}</span>
                 </li>
               </ul>

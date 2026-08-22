@@ -34,6 +34,10 @@ const handleOpenModal = (product: CustomerProductCard) => {
 
 // HÀM NHẬN DỮ LIỆU TỪ MODAL ĐỂ THÊM VÀO GIỎ
 const handleAddToCart = (payload: CartItemPayload) => {
+  if (!storeStore.selectedStoreId) {
+    toastStore.warning('Vui lòng chọn cửa hàng trước khi thêm vào giỏ hàng!');
+    return;
+  }
   toastStore.success(`Đã thêm ${payload.productName} vào giỏ!`);
   console.log('Đã nhận cục dữ liệu hoàn chỉnh để thêm vào giỏ:', payload);
   // (Sau này sẽ gọi cartStore ở đây)

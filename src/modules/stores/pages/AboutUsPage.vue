@@ -7,6 +7,7 @@ import { useStoreStore } from '@/modules/stores/stores/store.store'
 import StoreCard from '@/modules/stores/components/StoreCard.vue'
 import AboutUsHero from '@/modules/stores/components/about/AboutUsHero.vue'
 import AboutUsTimeline from '@/modules/stores/components/about/AboutUsTimeline.vue'
+import AppLoading from '@/shared/components/ui/AppLoading.vue'
 
 const router = useRouter()
 const customerStore = useStoreStore()
@@ -71,9 +72,7 @@ const handleSelectStore = (slug: string) => {
         </h2>
       </div>
 
-      <div v-if="pageLoading" class="flex justify-center py-12">
-        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-500"></div>
-      </div>
+      <AppLoading v-if="pageLoading" :show="true" text="Đang tải danh sách cửa hàng..." />
 
       <div v-else-if="visibleStores.length > 0">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center md:place-items-stretch">
