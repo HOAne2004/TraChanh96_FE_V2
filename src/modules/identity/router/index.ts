@@ -6,5 +6,12 @@ export const identityRoutes: RouteRecordRaw[] = [
     name: 'Profile',
     component: () => import('../pages/ProfilePage.vue'),
     meta: { requiresAuth: true }
-  }
+  },
+
+  {
+  path: '/verify-email',
+  name: 'VerifyEmail',
+  component: () => import('@/modules/identity/pages/VerifyEmailPage.vue'),
+  meta: { requiresAuth: false }
+}
 ];
