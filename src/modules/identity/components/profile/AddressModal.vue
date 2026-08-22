@@ -4,8 +4,8 @@ import IconSvgBagShopping from '@/assets/icons/IconSvgBagShopping.svg'
 import { ref, watch, onMounted, nextTick } from 'vue';
 import axios from 'axios';
 import { useToastStore } from '@/shared/store/toast.store';
-import { addressService } from '../services/address.service';
-import type { AddressFormRequest, AddressDto } from '../types/address';
+import { addressService } from '@/modules/identity/services/address.service';
+import type { AddressFormRequest, AddressDto } from '@/modules/identity/types/address';
 import AppLoading from '@/shared/components/ui/AppLoading.vue';
 
 const props = defineProps<{

@@ -3,10 +3,16 @@ import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/modules/identity/stores/auth.store'
 
-// Import các Component con đã được tách ra
-import ProfileInfoTab from '../components/ProfileInfoTab.vue'
-import AddressBookTab from '../components/AddressBookTab.vue'
+import ProfileInfoTab from '../components/profile/ProfileInfoTab.vue'
+import AddressBookTab from '../components/profile/AddressBookTab.vue'
+import SecurityTab from '../components/profile/SecurityTab.vue'
 // import OrderHistoryTab from '../components/OrderHistoryTab.vue'; // Sẽ tạo sau
+
+import IconSvgLock from '@/assets/icons/IconSvgLock.svg'
+import IconSvgUserCircle from '@/assets/icons/IconSvgUserCircle.svg'
+import IconSvgBook from '@/assets/icons/IconSvgBook.svg'
+import IconSvgBagShopping from '@/assets/icons/IconSvgBagShopping.svg'
+import IconSvgLogout from '@/assets/icons/IconSvgLogout.svg'
 
 const router = useRouter()
 const route = useRoute()
@@ -39,6 +45,7 @@ const handleLogout = async () => {
               'flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap md:whitespace-normal shrink-0 border-b border-transparent md:border-gray-100 last:border-0 rounded-md md:rounded-none',
             ]"
           >
+            <IconSvgUserCircle class="w-4 h-4 shrink-0" />
             Hồ sơ cá nhân
           </button>
 
@@ -51,6 +58,7 @@ const handleLogout = async () => {
               'flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap md:whitespace-normal shrink-0 border-b border-transparent md:border-gray-100 last:border-0 rounded-md md:rounded-none',
             ]"
           >
+            <IconSvgBook class="w-4 h-4 shrink-0" />
             Sổ địa chỉ
           </button>
 
@@ -63,13 +71,28 @@ const handleLogout = async () => {
               'flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap md:whitespace-normal shrink-0 border-b border-transparent md:border-gray-100 last:border-0 rounded-md md:rounded-none',
             ]"
           >
+            <IconSvgBagShopping class="w-4 h-4 shrink-0" />
             Lịch sử đơn hàng
+          </button>
+
+          <button
+            @click="activeTab = 'security'"
+            :class="[
+              activeTab === 'security'
+                ? 'bg-primary-50 text-primary-700 md:bg-white md:border-l-4 md:border-l-primary-500'
+                : 'text-gray-600 hover:bg-gray-50',
+              'flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap md:whitespace-normal shrink-0 border-b border-transparent md:border-gray-100 last:border-0 rounded-md md:rounded-none',
+            ]"
+          >
+            <IconSvgLock class="w-4 h-4 shrink-0" />
+            Bảo mật
           </button>
 
           <button
             @click="handleLogout"
             class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors whitespace-nowrap md:whitespace-normal shrink-0 border-none rounded-md md:rounded-none"
           >
+            <IconSvgLogout class="w-4 h-4 shrink-0" />
             Đăng xuất
           </button>
         </div>
@@ -78,6 +101,7 @@ const handleLogout = async () => {
       <main class="flex-1 w-full min-w-0">
         <ProfileInfoTab v-if="activeTab === 'profile'" />
         <AddressBookTab v-if="activeTab === 'addresses'" />
+        <SecurityTab v-if="activeTab === 'security'" />
       </main>
     </div>
   </div>
