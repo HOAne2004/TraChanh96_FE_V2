@@ -4,7 +4,7 @@ export const storeRoutes: RouteRecordRaw[] = [
     {
         path: '/about-us',
         name: 'aboutus',
-        component: () => import('@/shared/pages/customer/AboutUsPage.vue'),
+        component: () => import('@/modules/stores/pages/AboutUsPage.vue'),
         meta: {
             requiresAuth: false,
         }
@@ -12,7 +12,7 @@ export const storeRoutes: RouteRecordRaw[] = [
     {
         path: '/stores/:slug',
         name: 'store-detail',
-        component: () => import('@/shared/pages/customer/StoreDetailPage.vue'),
+        component: () => import('@/modules/stores/pages/StoreDetailPage.vue'),
         meta: {
             requiresAuth: false,
         }

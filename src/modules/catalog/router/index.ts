@@ -4,7 +4,7 @@ export const catalogRoutes: RouteRecordRaw[] = [
   {
     path: '/menu',
     name: 'Menu',
-    component: () => import('@/shared/pages/customer/MenuPage.vue'),
+    component: () => import('@/modules/catalog/pages/MenuPage.vue'),
     meta: {
       requiresAuth: false
     }
@@ -12,7 +12,7 @@ export const catalogRoutes: RouteRecordRaw[] = [
   {
     path: '/products/:slug',
     name: 'ProductDetail',
-    component: () => import('@/shared/pages/customer/ProductDetailPage.vue'),
+    component: () => import('@/modules/catalog/pages/ProductDetailPage.vue'),
     meta: {
       requiresAuth: false
     }

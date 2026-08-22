@@ -4,7 +4,7 @@ export const orderRoutes: RouteRecordRaw[] = [
   {
     path: '/cart',
     name: 'Cart',
-    component: () => import('@/shared/pages/customer/CartPage.vue'),
+    component: () => import('@/modules/orders/pages/CartPage.vue'),
     meta: {
       requiresAuth: false
     }
