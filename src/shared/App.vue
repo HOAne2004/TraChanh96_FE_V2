@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import LoginModal from '@/modules/identity/components/LoginModal.vue';
-import RegisterModal from '@/modules/identity/components/RegisterModal.vue';
-import ForgotPasswordModal from '@/modules/identity/components/ForgotPasswordModal.vue';
+import LoginModal from '@/modules/identity/components/auth/LoginModal.vue';
+import RegisterModal from '@/modules/identity/components/auth/RegisterModal.vue';
+import ForgotPasswordModal from '@/modules/identity/components/auth/ForgotPasswordModal.vue';
 import ToastContainer from '@/shared/components/ToastContainer.vue';
 import ConfirmModal from '@/shared/components/ConfirmModal.vue';
 </script>
