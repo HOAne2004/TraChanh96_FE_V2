@@ -2,16 +2,15 @@
 
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import type { UserProfile } from '@/modules/identity/types/user';
+import type { UserProfileResponse } from '@/modules/identity/types/user';
 import { authService } from '../services/auth.service';
-import { userService } from '../services/user.service';
 
 export const useAuthStore = defineStore('auth', () => {
   // 1. State
   const token = ref<string | null>(localStorage.getItem('accessToken'));
   const refreshToken = ref<string | null>(localStorage.getItem('refreshToken')); // THÊM MỚI
   const savedUser = localStorage.getItem('user');
-  const user = ref<UserProfile | null>(savedUser ? JSON.parse(savedUser) : null);
+  const user = ref<UserProfileResponse | null>(savedUser ? JSON.parse(savedUser) : null);
 
   const isLoginModalVisible = ref<boolean>(false);
   const isRegisterModalVisible = ref<boolean>(false);
@@ -19,7 +18,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   // 2. Getters
   const isAuthenticated = computed(() => !!token.value);
-  const isAdmin = computed(() => user.value?.role === 'Admin' || user.value?.role === 'Manager');
+  const isAdmin = computed(() => user.value?.roles?.includes('Admin') || user.value?.roles?.includes('Manager'));
 
   // 3. Actions
   function setTokens(accessToken: string, refreshTokenValue: string) {
@@ -29,7 +28,7 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('refreshToken', refreshTokenValue);
   }
 
-  function setUser(newUser: UserProfile) {
+  function setUser(newUser: UserProfileResponse) {
     user.value = newUser;
     localStorage.setItem('user', JSON.stringify(newUser));
   }
@@ -43,14 +42,15 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('user');
   }
 
-  async function logout() {
+async function logout() {
     try {
-      if (user.value?.publicId) {
-        await userService.logout(user.value.publicId);
+      if (refreshToken.value) {
+        await authService.logout(refreshToken.value);
       }
     } catch (error) {
-      console.warn('Logout API failed, but clearing local state anyway:', error);
+      console.warn('Logout API failed (maybe already expired), clearing local state anyway:', error);
     } finally {
+      // Dù API thành công hay rớt mạng, vẫn phải dọn dẹp LocalStorage để user thoát ra
       clearAuthData();
     }
   }
@@ -73,12 +73,13 @@ export const useAuthStore = defineStore('auth', () => {
       // Optional: Cập nhật lại user nếu Backend trả về thông tin user mới
       if (response.userId) {
           setUser({
-              publicId: response.userId,
+              id: response.userId,
               email: response.email,
               fullName: response.fullName,
-              role: response.role,
-              // phone, thumbnailUrl... (tùy backend trả về)
-          } as UserProfile);
+              roles: response.roles || [],
+              thumbnailUrl: response.thumbnailUrl || '',
+              emailVerified: user.value?.emailVerified || false,
+          });
       }
 
       return response.accessToken;
