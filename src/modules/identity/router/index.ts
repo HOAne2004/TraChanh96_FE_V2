@@ -9,9 +9,15 @@ export const identityRoutes: RouteRecordRaw[] = [
   },
 
   {
-  path: '/verify-email',
-  name: 'VerifyEmail',
-  component: () => import('@/modules/identity/pages/VerifyEmailPage.vue'),
-  meta: { requiresAuth: false }
-}
+    path: '/verify-email',
+    name: 'VerifyEmail',
+    component: () => import('@/modules/identity/pages/VerifyEmailPage.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/setup-password',
+    name: 'SetupPassword',
+    component: () => import('@/modules/identity/pages/SetupPasswordPage.vue'),
+    meta: { requiresAuth: false }
+  }
 ];

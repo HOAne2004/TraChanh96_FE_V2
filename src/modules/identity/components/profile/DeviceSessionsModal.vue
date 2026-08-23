@@ -165,11 +165,9 @@ const handleRevokeAll = async () => {
 
           <!-- Nút Đăng xuất -->
           <button
+            v-if="!session.isCurrentSession"
             @click="handleRevokeSession(session)"
-            class="sm:w-auto w-full px-4 py-2 text-xs font-semibold rounded-lg transition-colors border"
-            :class="session.isCurrentSession
-              ? 'text-red-600 border-red-200 bg-white hover:bg-red-50'
-              : 'text-gray-700 border-gray-200 bg-white hover:bg-gray-50'"
+            class="sm:w-auto w-full px-4 py-2 text-xs font-semibold rounded-lg transition-colors border text-gray-700 border-gray-200 bg-white hover:bg-gray-50"
           >
             Đăng xuất
           </button>
